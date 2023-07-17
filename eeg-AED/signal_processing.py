@@ -1,4 +1,4 @@
-from scipy import signal, interpolate
+from scipy import signal
 from scipy.signal import hilbert
 import numpy as np
 
@@ -21,15 +21,15 @@ def calculate_kuramoto_order_parameter(time_series):
     assert phases.shape == time_series.shape
     # Compute the Kuramoto order parameter for each time point
     # 1j*1j == -1
-    r = np.abs(np.sum(np.exp(1j*phases), axis=0)) / num_series
+    r = np.abs(np.sum(np.exp(1j * phases), axis=0)) / num_series
     return r
 
 
 def process_eeg_data(data, sample_rate, notch_freq=50, band_pass_freq=(100, 125)):
     """
     Applies a notch filter and a bandpass filter to the input data along each row.
-    
-    The notch filter helps eliminate noise at a specified frequency (default is 50Hz). 
+
+    The notch filter helps eliminate noise at a specified frequency (default is 50Hz).
     The bandpass filter only allows frequencies within a specified range to pass through (default is 100-125Hz).
 
     Parameters:
@@ -41,13 +41,17 @@ def process_eeg_data(data, sample_rate, notch_freq=50, band_pass_freq=(100, 125)
     Returns:
     numpy.ndarray: The filtered data, with the same shape as the input data.
     """
-    
+
     # Apply notch filter to eliminate 50Hz noise
     notch_b, notch_a = signal.iirnotch(notch_freq, 30, sample_rate)
     data_notch_filtered = signal.filtfilt(notch_b, notch_a, data, axis=1)
-    
+
     # Apply bandpass filter
-    band_pass_b, band_pass_a = signal.butter(2, band_pass_freq, btype='band', fs=sample_rate)
-    data_band_pass_filtered = signal.filtfilt(band_pass_b, band_pass_a, data_notch_filtered, axis=1)
-    
+    band_pass_b, band_pass_a = signal.butter(
+        2, band_pass_freq, btype="band", fs=sample_rate
+    )
+    data_band_pass_filtered = signal.filtfilt(
+        band_pass_b, band_pass_a, data_notch_filtered, axis=1
+    )
+
     return data_band_pass_filtered
