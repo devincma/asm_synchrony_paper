@@ -6,6 +6,7 @@ import pickle
 import pandas as pd
 import numpy as np
 
+
 def _pull_iEEG(ds, start_usec, duration_usec, channel_ids):
     """
     Pull data while handling iEEGConnectionError
@@ -24,6 +25,7 @@ def _pull_iEEG(ds, start_usec, duration_usec, channel_ids):
         except Exception as _:
             time.sleep(1)
             i += 1
+
 
 def clean_labels(channel_li: list, pt: str) -> list:
     """This function cleans a list of channels and returns the new channels
@@ -71,11 +73,11 @@ def clean_labels(channel_li: list, pt: str) -> list:
             }
             if lead in conv_dict:
                 lead = conv_dict[lead]
-        
+
         if pt in ("HUP93_phaseII", "HUP093", "sub-RID0050"):
             if lead.startswith("G"):
                 lead = "G"
-    
+
         if pt in ("HUP89_phaseII", "HUP089", "sub-RID0024"):
             if lead in ("GRID", "G"):
                 lead = "RG"
@@ -109,7 +111,6 @@ def clean_labels(channel_li: list, pt: str) -> list:
             if lead in conv_dict:
                 lead = conv_dict[lead]
 
-
     return new_channels
 
 
@@ -122,7 +123,7 @@ def get_iEEG_data(
     select_electrodes=None,
     ignore_electrodes=None,
     outputfile=None,
-    force_pull = False
+    force_pull=False,
 ):
     start_time_usec = int(start_time_usec)
     stop_time_usec = int(stop_time_usec)
@@ -140,12 +141,12 @@ def get_iEEG_data(
             ds = s.open_dataset(iEEG_filename)
             all_channel_labels = ds.get_channel_labels()
             break
-            
+
         except Exception as e:
             time.sleep(1)
             iter += 1
     all_channel_labels = clean_labels(all_channel_labels, iEEG_filename)
-    
+
     if select_electrodes is not None:
         if isinstance(select_electrodes[0], Number):
             channel_ids = select_electrodes
@@ -154,8 +155,9 @@ def get_iEEG_data(
             select_electrodes = clean_labels(select_electrodes, iEEG_filename)
             if any([i not in all_channel_labels for i in select_electrodes]):
                 if force_pull:
-                    select_electrodes = [e for e in select_electrodes
-                                          if e in all_channel_labels]
+                    select_electrodes = [
+                        e for e in select_electrodes if e in all_channel_labels
+                    ]
                 else:
                     raise ValueError("Channel not in iEEG")
 
@@ -279,7 +281,21 @@ def check_channel_types(ch_list, threshold=15):
         if lead in ["ECG", "EKG"]:
             ch_df.loc[group.index, "type"] = "ecg"
             continue
-        if lead in ["C", "Cz", "CZ", "F", "Fp", "FP", "Fz", "FZ", "O", "P", "Pz", "PZ", "T"]:
+        if lead in [
+            "C",
+            "Cz",
+            "CZ",
+            "F",
+            "Fp",
+            "FP",
+            "Fz",
+            "FZ",
+            "O",
+            "P",
+            "Pz",
+            "PZ",
+            "T",
+        ]:
             ch_df.loc[group.index, "type"] = "eeg"
             continue
         if len(group) > threshold:
@@ -291,30 +307,31 @@ def check_channel_types(ch_list, threshold=15):
 
 
 def load_full_channels(dataset, duration_secs, sampling_rate, chn_idx):
-  """
-  Loads the entire channel from IEEG.org
-  Input:
-    dataset: the IEEG dataset object
-    duration_secs: the duration of the channel, in seconds
-    sampling_rate: the sampling rate of the channel, in Hz
-    chn_idx: the indicies of the m channels you want to load,
-    as an array-like object
-  Returns:
-    [n, m] ndarry of the channels' values.
-  """
-  #stores the segments of the channel's data
-  chn_segments = []
+    """
+    Loads the entire channel from IEEG.org
+    Input:
+      dataset: the IEEG dataset object
+      duration_secs: the duration of the channel, in seconds
+      sampling_rate: the sampling rate of the channel, in Hz
+      chn_idx: the indicies of the m channels you want to load,
+      as an array-like object
+    Returns:
+      [n, m] ndarry of the channels' values.
+    """
+    # stores the segments of the channel's data
+    chn_segments = []
 
-  #how many segments do we expect?
-  num_segments = int(np.ceil(duration_secs * sampling_rate / 6e2))
+    # how many segments do we expect?
+    num_segments = int(np.ceil(duration_secs * sampling_rate / 6e2))
 
-  #segment start times and the step
-  seg_start, step = np.linspace(1, duration_secs*1e6, num_segments,
-                                endpoint=False, retstep=True)
+    # segment start times and the step
+    seg_start, step = np.linspace(
+        1, duration_secs * 1e6, num_segments, endpoint=False, retstep=True
+    )
 
-  #get the segments
-  for start in seg_start:
-    chn_segments.append(dataset.get_data(start, step, chn_idx))
+    # get the segments
+    for start in seg_start:
+        chn_segments.append(dataset.get_data(start, step, chn_idx))
 
-  #concatenate the segments vertically
-  return np.vstack(chn_segments)
+    # concatenate the segments vertically
+    return np.vstack(chn_segments)
