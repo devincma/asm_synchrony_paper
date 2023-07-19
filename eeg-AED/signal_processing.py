@@ -25,7 +25,12 @@ def calculate_kuramoto_order_parameter(time_series):
     return r
 
 
-def process_eeg_data(data, sample_rate, notch_freq=50, band_pass_freq=(100, 125)):
+def process_eeg_data(
+    data,
+    sample_rate,
+    band_pass_freq,
+    notch_freq=60,
+):
     """
     Applies a notch filter and a bandpass filter to the input data along each row.
 
@@ -42,9 +47,12 @@ def process_eeg_data(data, sample_rate, notch_freq=50, band_pass_freq=(100, 125)
     numpy.ndarray: The filtered data, with the same shape as the input data.
     """
 
-    # Apply notch filter to eliminate 50Hz noise
+    # Apply notch filter to eliminate 60Hz noise
     notch_b, notch_a = signal.iirnotch(notch_freq, 30, sample_rate)
     data_notch_filtered = signal.filtfilt(notch_b, notch_a, data, axis=1)
+
+    if band_pass_freq is None:
+        return data_notch_filtered
 
     # Apply bandpass filter
     band_pass_b, band_pass_a = signal.butter(
