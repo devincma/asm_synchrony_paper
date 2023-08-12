@@ -335,6 +335,7 @@ def spike_detector(data, fs, **kwargs):
     Returns
     gdf:            np.NDArray - spike locations (m spikes x (peak index, channel))
     """
+    print("Using optimized spike detector...")
 
     ### Assigning KWARGS using a more efficient method ###############
     tmul = kwargs.get("tmul", 19)  # 25
