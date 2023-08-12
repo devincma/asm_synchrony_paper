@@ -198,6 +198,124 @@ def multi_channel_requirement_2(gdf, nchs, fs):
         return np.array([])
 
 
+def process_channel(
+    signal, fs, tmul, absthresh, sur_time, too_high_abs, spkdur, lpf1, hpf
+):
+    out = []  # initialize preliminary spike receiver
+
+    if sum(np.isnan(signal)) > 0:
+        return None  # if there are any nans in the signal skip the channel (worth investigating)
+
+    # re-adjust the mean of the signal to be zero
+    signal = signal - np.mean(signal)
+
+    # receiver initialization
+    spike_times = []
+    spike_durs = []
+    spike_amps = []
+
+    # low pass filter to remove artifact
+    lpsignal = eeg_filter(signal, lpf1, "lowpass", fs)
+
+    # high pass filter for the 'spike' component
+    hpsignal = eeg_filter(lpsignal, hpf, "highpass", fs)
+
+    # defining thresholds
+    lthresh = np.median(abs(hpsignal))
+    thresh = lthresh * tmul  # this is the final threshold we want to impose
+
+    signals = [hpsignal, -hpsignal]
+
+    for ksignal in signals:
+        # apply custom peak finder /IES_helper_functions.py
+        spp, spv = find_peaks(ksignal)  # calculate peaks and troughs
+        spp, spv = spp.squeeze(), spv.squeeze()  # reformat
+
+        # find the durations less than or equal to that of a spike
+        idx = np.argwhere(np.diff(spp) <= spkdur[1]).squeeze()
+        startdx = spp[idx]  # indices for each spike that has a long enough duration
+        startdx1 = spp[idx + 1]  # indices for each "next" spike
+
+        # Loop over peaks
+        for i in range(len(startdx)):
+            spkmintic = spv[(spv > startdx[i]) & (spv < startdx1[i])]
+            # find the valley that is between the two peaks
+            if not any(spkmintic):
+                continue
+            max_height = max(
+                abs(ksignal[startdx1[i]] - ksignal[spkmintic]),
+                abs(ksignal[startdx[i]] - ksignal[spkmintic]),
+            )[0]
+            if max_height > thresh:  # see if the peaks are big enough
+                spike_times.append(int(spkmintic))  # add index to the spike list
+                spike_durs.append(
+                    (startdx1[i] - startdx[i]) * 1000 / fs
+                )  # add spike duration to list
+                spike_amps.append(max_height)  # add spike amplitude to list
+
+    # Generate spikes matrix
+    spikes = np.vstack([spike_times, spike_durs, spike_amps]).T
+
+    # initialize exclusion receivers
+    toosmall = []
+    toosharp = []
+    toobig = []
+
+    # now have all the info we need to decide if this thing is a spike or not.
+    for i in range(spikes.shape[0]):  # for each spike
+        # re-define baseline to be 2 seconds surrounding
+        surround = sur_time
+        istart = int(
+            max(0, np.around(spikes[i, 0] - surround * fs))
+        )  # find -2s index, ensuring not to exceed idx bounds
+        iend = int(
+            min(len(hpsignal), np.around(spikes[i, 0] + surround * fs + 1))
+        )  # find +2s index, ensuring not to exceed idx bounds
+
+        alt_thresh = (
+            np.median(abs(hpsignal[istart:iend])) * tmul
+        )  # identify threshold within this window
+
+        if (spikes[i, 2] > alt_thresh) & (
+            spikes[i, 2] > absthresh
+        ):  # both parts together are bigger than thresh: so have some flexibility in relative sizes
+            if (
+                spikes[i, 1] > spkdur[0]
+            ):  # spike wave cannot be too sharp: then it is either too small or noise
+                if spikes[i, 2] < too_high_abs:
+                    out.append(spikes[i, 0])  # add timestamp of spike to output list
+                else:
+                    toobig.append(spikes[i, 0])  # spike is above too_high_abs
+            else:
+                toosharp.append(spikes[i, 0])  # spike duration is too short
+        else:
+            toosmall.append(spikes[i, 0])  # window-relative spike height is too short
+
+    # Spike Realignment
+    if out:
+        timeToPeak = np.array([-0.15, 0.15])
+        fullSurround = np.array([-sur_time, sur_time]) * fs
+        idxToPeak = timeToPeak * fs
+
+        hpsignal_length = len(hpsignal)
+
+        for i in range(len(out)):
+            currIdx = out[i]
+            surround_idx = np.arange(
+                max(0, round(currIdx + fullSurround[0])),
+                min(round(currIdx + fullSurround[1]), hpsignal_length),
+            )
+            idxToLook = np.arange(
+                max(0, round(currIdx + idxToPeak[0])),
+                min(round(currIdx + idxToPeak[1]), hpsignal_length),
+            )
+            snapshot = hpsignal[idxToLook] - np.median(hpsignal[surround_idx])
+            I = np.argmax(abs(snapshot))
+            out[i] = idxToLook[0] + I
+
+    return np.array(out)
+
+
 def spike_detector(data, fs, **kwargs):
     """
     Parameters
@@ -245,150 +363,45 @@ def spike_detector(data, fs, **kwargs):
     labels = np.array(labels)
 
     start_time = time.time()  # Starting the timer
-    for j in range(nchs):  # Loop through each channel and count spikes
-        out = []  # initialize preliminary spike receiver
-        signal = data[:, j]  # collect channel
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        futures_to_channel = {
+            executor.submit(
+                process_channel,
+                data[:, j],  # collect channel
+                fs,
+                tmul,
+                absthresh,
+                sur_time,
+                too_high_abs,
+                spkdur,
+                lpf1,
+                hpf,
+            ): j
+            for j in range(nchs)
+        }
 
-        if sum(np.isnan(signal)) > 0:
-            continue  # if there are any nans in the signal skip the channel (worth investigating)
-
-        # re-adjust the mean of the signal to be zero
-        signal = signal - np.mean(signal)
-
-        # receiver initializeation
-        spike_times = []
-        spike_durs = []
-        spike_amps = []
-
-        # low pass filter to remove artifact
-        lpsignal = eeg_filter(signal, lpf1, "lowpass", fs)
-        # low pass filter
-        low_passes[:, j] = lpsignal
-        # high pass filter for the 'spike' component
-        hpsignal = eeg_filter(lpsignal, hpf, "highpass", fs)
-        # high pass filter
-        high_passes[:, j] = hpsignal  # collect signals for later plotting
-
-        # defining thresholds
-        lthresh = np.median(abs(hpsignal))
-        # this algorithm might need to be adjusted
-        thresh = lthresh * tmul
-        # this is the final threshold we want to impose
-
-        signals = [hpsignal, -hpsignal]
-
-        for ksignal in signals:
-            # apply custom peak finder /IES_helper_functions.py
-            spp, spv = find_peaks(ksignal)  # calculate peaks and troughs
-            spp, spv = spp.squeeze(), spv.squeeze()  # reformat
-
-            # find the durations less than or equal to that of a spike
-            idx = np.argwhere(np.diff(spp) <= spkdur[1]).squeeze()
-            startdx = spp[idx]  # indices for each spike that has a long enough duration
-            startdx1 = spp[idx + 1]  # indices for each "next" spike
-            ### this excludes the last spike: should consider comparing to location of next trough
-
-            # Loop over peaks
-            for i in range(len(startdx)):
-                spkmintic = spv[(spv > startdx[i]) & (spv < startdx1[i])]
-                # find the valley that is between the two peaks
-                if not any(spkmintic):
-                    continue
-                # If the height from valley to either peak is big enough, it could
-                # be a spike
-                max_height = max(
-                    abs(ksignal[startdx1[i]] - ksignal[spkmintic]),
-                    abs(ksignal[startdx[i]] - ksignal[spkmintic]),
-                )[0]
-                if max_height > thresh:  # see if the peaks are big enough
-                    spike_times.append(int(spkmintic))  # add index to the spike list
-                    spike_durs.append(
-                        (startdx1[i] - startdx[i]) * 1000 / fs
-                    )  # add spike duration to list
-                    spike_amps.append(max_height)  # add spike amplitude to list
-
-        # Generate spikes matrix
-        spikes = np.vstack([spike_times, spike_durs, spike_amps]).T
-
-        # initialize exclusion receivers
-        toosmall = []
-        toosharp = []
-        toobig = []
-
-        # now have all the info we need to decide if this thing is a spike or not.
-        for i in range(spikes.shape[0]):  # for each spike
-            # re-define baseline to be 2 seconds surrounding
-            surround = sur_time
-            istart = int(
-                max(0, np.around(spikes[i, 0] - surround * fs))
-            )  # find -2s index, ensuring not to exceed idx bounds
-            iend = int(
-                min(len(hpsignal), np.around(spikes[i, 0] + surround * fs + 1))
-            )  # find +2s index, ensuring not to exceed idx bounds
-
-            alt_thresh = (
-                np.median(abs(hpsignal[istart:iend])) * tmul
-            )  # identify threshold within this window
-
-            if (spikes[i, 2] > alt_thresh) & (
-                spikes[i, 2] > absthresh
-            ):  # both parts together are bigger than thresh: so have some flexibility in relative sizes
-                if (
-                    spikes[i, 1] > spkdur[0]
-                ):  # spike wave cannot be too sharp: then it is either too small or noise
-                    if spikes[i, 2] < too_high_abs:
-                        out.append(
-                            spikes[i, 0]
-                        )  # add timestamp of spike to output list
-                    else:
-                        toobig.append(spikes[i, 0])  # spike is above too_high_abs
-                else:
-                    toosharp.append(spikes[i, 0])  # spike duration is too short
-            else:
-                toosmall.append(
-                    spikes[i, 0]
-                )  # window-relative spike height is too short
-        out = np.array(out)
-
-        # Spike Realignment
-        if out.any():
-            # Re-align spikes to peak of the spikey component
-            timeToPeak = np.array([-0.15, 0.15])
-            # Only look 150 ms before and 150 ms after the currently defined peak
-            fullSurround = np.array([-sur_time, sur_time]) * fs
-            idxToPeak = timeToPeak * fs
-
-            hpsignal_length = len(hpsignal)
-
-            for i in range(len(out)):
-                currIdx = out[i]
-                surround_idx = np.arange(
-                    max(0, round(currIdx + fullSurround[0])),
-                    min(round(currIdx + fullSurround[1]), hpsignal_length),
-                )
-                idxToLook = np.arange(
-                    max(0, round(currIdx + idxToPeak[0])),
-                    min(round(currIdx + idxToPeak[1]), hpsignal_length),
-                )
-                snapshot = hpsignal[idxToLook] - np.median(hpsignal[surround_idx])
-                # Look at the high frequency signal (where the mean is substracted already)
-                I = np.argmax(abs(snapshot))
-                # The peak is the maximum absolute value of this
-                out[i] = idxToLook[0] + I
-                ### Might need to change this to -2 or -0 # changed from -1 to -0 because we want to add index to earlier index
-
-        # Concatenate the list of spikes to the global spike receiver
-        if out.any():
-            temp = (
-                np.array(
-                    [np.expand_dims(out, 1), np.tile([j], (len(out), 1))], dtype=object
-                )
-                .squeeze()
-                .T
-            )
-            # all_spikes = np.vstack((all_spikes,temp))
-            all_spikes.append(temp)
-            # change all spikes to a list, append and then vstack all at end
+        for future in concurrent.futures.as_completed(futures_to_channel):
+            j = futures_to_channel[future]
+            try:
+                channel_out = future.result()
+                # Concatenate the list of spikes to the global spike receiver
+                if channel_out.any():
+                    temp = (
+                        np.array(
+                            [
+                                np.expand_dims(channel_out, 1),
+                                np.tile([j], (len(channel_out), 1)),
+                            ],
+                            dtype=object,
+                        )
+                        .squeeze()
+                        .T
+                    )
+                    # all_spikes = np.vstack((all_spikes,temp))
+                    all_spikes.append(temp)
+                    # change all spikes to a list, append and then vstack all at end
+            except Exception as exc:
+                print(f"Channel {j} generated an exception: {exc}")
 
     end_time = time.time()  # Ending the timer
     duration = end_time - start_time  # Calculating the duration
