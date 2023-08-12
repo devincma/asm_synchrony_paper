@@ -1,6 +1,146 @@
 import numpy as np
+from scipy import signal as sig
 from get_iEEG_data import *
-from IES_helper_functions import *  # _eegfilt,_FindPeaks,_make_fake,_multi_channel_requirement,_car,_electrode_selection
+
+
+def eegfilt(signal, fc, filttype, fs):
+    """
+    Filters an EEG signal using a Butterworth filter.
+
+    Parameters:
+    - signal (array-like): The EEG signal to be filtered. This should be a one-dimensional array of values.
+    - fc (float): The cutoff frequency for the filter in Hz. Must be less than half the sampling rate (fs/2).
+    - filttype (str): The type of the filter. Acceptable values are 'low', 'high', 'bandpass', and 'bandstop'.
+    - fs (float): The sampling rate of the EEG signal in Hz.
+
+    Returns:
+    - array-like: The filtered EEG signal.
+
+    Raises:
+    - AssertionError: If the cutoff frequency is greater than or equal to half the sampling rate.
+
+    Note:
+    - This function uses the Butterworth filter from the `scipy.signal` module.
+    """
+    assert fc < fs / 2, "Cutoff frequency must be < one half the sampling rate"
+    # initialize constants for filter
+    order = 6
+    # Create and apply filter
+    B, A = sig.butter(order, fc, filttype, fs=fs)
+    return sig.filtfilt(B, A, signal)
+
+
+def FindPeaks(signal):
+    """
+    Finds the peaks and troughs in a given signal.
+
+    This function identifies the peaks and troughs of a signal by computing its first derivative
+    and then determining where the derivative changes sign.
+
+    Parameters:
+    - signal (array-like): A one-dimensional array of numeric values representing the signal.
+
+    Returns:
+    - tuple: A tuple containing two arrays:
+        1. An array of indices indicating the locations of the troughs.
+        2. An array of indices indicating the locations of the peaks.
+
+    Notes:
+    - Author: Nagi Hatoum
+    - Copyright: 2005
+    - This implementation was adapted from Erin Conrad.
+    - Peaks are regions where the signal increases and then decreases, while troughs are regions where the signal decreases and then increases.
+    - This function may not capture all peaks or troughs if the signal has very small fluctuations or noise.
+
+    Examples:
+    >>> signal = [1, 3, 7, 6, 4, 5, 8, 6]
+    >>> FindPeaks(signal)
+    (array([2]), array([6]))
+    """
+    ds = np.diff(signal, axis=0)
+    ds = np.insert(ds, 0, ds[0])  # pad diff
+    mask = np.argwhere(abs(ds[1:]) <= 1e-3).squeeze()  # got rid of +1
+    ds[mask] = ds[mask - 1]
+    ds = np.sign(ds)
+    ds = np.diff(ds)
+    ds = np.insert(ds, 0, ds[0])
+    t = np.argwhere(ds > 0)
+    p = np.argwhere(ds < 0)
+    return p, t
+
+
+def multi_channel_requirement(gdf, nchs, fs):
+    # Need to change so that it returns total spike counter to help remove duplicates
+    min_chs = 2
+    if nchs < 16:
+        max_chs = np.inf
+    else:
+        max_chs = np.ceil(nchs / 2)
+    min_time = 100 * 1e-3 * fs
+
+    # Check if there is even more than 1 spiking channel. Will throw error
+    try:
+        if len(np.unique(gdf[:, 1])) < min_chs:
+            return np.array([])
+    except IndexError:
+        return np.array([])
+
+    final_spikes = []
+
+    s = 0  # start at time negative one for 0 based indexing
+    curr_seq = [s]
+    last_time = gdf[s, 0]
+    spike_count = 0
+    while s < (gdf.shape[0] - 1):  # check to see if we are at last spike
+        # move to next spike time
+        new_time = gdf[s + 1, 0]  # calculate the next spike time
+
+        # if it's within the time diff
+        if (
+            new_time - last_time
+        ) < min_time:  # check that the spikes are within the window of time
+            curr_seq.append(s + 1)  # append it to the current sequence
+
+            if s == (
+                gdf.shape[0] - 2
+            ):  # see if you just added the last spike, if so, done with sequence
+                # done with sequence, check if the number of involved chs is
+                # appropriate
+                l = len(np.unique(gdf[curr_seq, 1]))
+                if l >= min_chs and l <= max_chs:
+                    final_spikes.append(
+                        np.hstack(
+                            (
+                                gdf[curr_seq, :],
+                                np.ones((len(curr_seq), 1)) * spike_count,
+                            )
+                        )
+                    )
+        else:
+            # done with sequence, check if the length of sequence is
+            # appropriate
+            l = len(np.unique(gdf[curr_seq, 1]))
+            if (l >= min_chs) & (l <= max_chs):
+                final_spikes.append(
+                    np.hstack(
+                        (gdf[curr_seq, :], np.ones((len(curr_seq), 1)) * spike_count)
+                    )
+                )
+                spike_count += 1
+            # reset sequence
+            curr_seq = [s + 1]
+        # increase the last time
+        last_time = gdf[s + 1, 0]
+
+        # increase the current spike
+        s += 1
+
+    if len(final_spikes) != 0:
+        return np.vstack(
+            final_spikes
+        )  # return all final spikes with a spike sequence counter
+    else:
+        return np.array([])
 
 
 def ies_detector(data, fs, **kwargs):
