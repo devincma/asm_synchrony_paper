@@ -3,7 +3,7 @@ from scipy import signal as sig
 from get_iEEG_data import *
 
 
-def eegfilt(signal, fc, filttype, fs):
+def eeg_filter(signal, fc, filttype, fs):
     """
     Filters an EEG signal using a Butterworth filter.
 
@@ -23,14 +23,14 @@ def eegfilt(signal, fc, filttype, fs):
     - This function uses the Butterworth filter from the `scipy.signal` module.
     """
     assert fc < fs / 2, "Cutoff frequency must be < one half the sampling rate"
-    # initialize constants for filter
+    # Initialize constants for filter
     order = 6
     # Create and apply filter
     B, A = sig.butter(order, fc, filttype, fs=fs)
     return sig.filtfilt(B, A, signal)
 
 
-def FindPeaks(signal):
+def find_peaks(signal):
     """
     Finds the peaks and troughs in a given signal.
 
@@ -54,7 +54,7 @@ def FindPeaks(signal):
 
     Examples:
     >>> signal = [1, 3, 7, 6, 4, 5, 8, 6]
-    >>> FindPeaks(signal)
+    >>> find_peaks(signal)
     (array([2]), array([6]))
     """
     ds = np.diff(signal, axis=0)
@@ -143,7 +143,60 @@ def multi_channel_requirement(gdf, nchs, fs):
         return np.array([])
 
 
-def ies_detector(data, fs, **kwargs):
+def multi_channel_requirement_2(gdf, nchs, fs):
+    min_chs = 2
+    if nchs < 16:
+        max_chs = np.inf
+    else:
+        max_chs = np.ceil(nchs / 2)
+    min_time = 100 * 1e-3 * fs
+
+    # Check if there is even more than 1 spiking channel. Will throw error
+    try:
+        if len(np.unique(gdf[:, 1])) < min_chs:
+            return np.array([])
+    except IndexError:
+        return np.array([])
+
+    final_spikes = []
+    s = 0
+    curr_seq = [s]
+    last_time = gdf[s, 0]
+
+    while s < (gdf.shape[0] - 1):  # check to see if we are at last spike
+        # move to next spike time
+        new_time = gdf[s + 1, 0]
+
+        if (new_time - last_time) < min_time:
+            curr_seq.append(s + 1)
+
+            if s == (gdf.shape[0] - 2):
+                l = len(np.unique(gdf[curr_seq, 1]))
+                if l >= min_chs and l <= max_chs:
+                    relative_time_diff = gdf[curr_seq, 0] - gdf[curr_seq[0], 0]
+                    final_spikes.append(
+                        np.hstack((gdf[curr_seq, :], relative_time_diff.reshape(-1, 1)))
+                    )
+        else:
+            l = len(np.unique(gdf[curr_seq, 1]))
+            if (l >= min_chs) & (l <= max_chs):
+                relative_time_diff = gdf[curr_seq, 0] - gdf[curr_seq[0], 0]
+                final_spikes.append(
+                    np.hstack((gdf[curr_seq, :], relative_time_diff.reshape(-1, 1)))
+                )
+
+            curr_seq = [s + 1]
+
+        last_time = gdf[s + 1, 0]
+        s += 1
+
+    if len(final_spikes) != 0:
+        return np.vstack(final_spikes)
+    else:
+        return np.array([])
+
+
+def spike_detector(data, fs, **kwargs):
     """
     Parameters
     data:           np.NDArray - iEEG recordings (m samples x n channels)
@@ -227,11 +280,11 @@ def ies_detector(data, fs, **kwargs):
         spike_amps = []
 
         # low pass filter to remove artifact
-        lpsignal = eegfilt(signal, lpf1, "lowpass", fs)
+        lpsignal = eeg_filter(signal, lpf1, "lowpass", fs)
         # low pass filter
         low_passes[:, j] = lpsignal
         # high pass filter for the 'spike' component
-        hpsignal = eegfilt(lpsignal, hpf, "highpass", fs)
+        hpsignal = eeg_filter(lpsignal, hpf, "highpass", fs)
         # high pass filter
         high_passes[:, j] = hpsignal  # collect signals for later plotting
 
@@ -250,7 +303,7 @@ def ies_detector(data, fs, **kwargs):
                 ksignal = hpsignal
 
             # apply custom peak finder /IES_helper_functions.py
-            spp, spv = FindPeaks(ksignal)  # calculate peaks and troughs
+            spp, spv = find_peaks(ksignal)  # calculate peaks and troughs
             spp, spv = spp.squeeze(), spv.squeeze()  # reformat
 
             # find the durations less than or equal to that of a spike

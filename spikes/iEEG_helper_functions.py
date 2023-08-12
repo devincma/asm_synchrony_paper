@@ -76,7 +76,7 @@ def electrode_selection(labels):
     return select
 
 
-def identify_bad_channels(values, channel_indices, channel_labels, fs):
+def identify_bad_channels(values, channel_indices, fs):
     """
     Identifies 'bad' channels in an EEG dataset based on various criteria such as high variance, missing data,
     crossing absolute threshold, high variance above baseline, and 60 Hz noise.
@@ -84,7 +84,6 @@ def identify_bad_channels(values, channel_indices, channel_labels, fs):
     Parameters:
     values (numpy.ndarray): A 2D array of EEG data where each column is a different channel and each row is a reading.
     channel_indices (list): A list containing indices of channels to be analyzed.
-    channel_labels (list): A list of channel labels.
     fs (float): The sampling frequency.
 
     Returns:
