@@ -1,6 +1,8 @@
 import numpy as np
 from scipy import signal as sig
 from get_iEEG_data import *
+import time
+import concurrent.futures
 
 
 def eeg_filter(signal, fc, filttype, fs):
@@ -211,43 +213,22 @@ def spike_detector(data, fs, **kwargs):
     spkdur:         Iterable - min and max spike duration thresholds in ms (min, max)
     lpf1:           float - low pass filter cutoff frequency
     hpf:            float - high pass filter cutoff frequency
-    fig_path:       String - file path for saving figures
 
     Returns
     gdf:            np.NDArray - spike locations (m spikes x (peak index, channel))
-
     """
 
-    def _check(key, var, keyset):
-        """
-        Internal Function
-        Parameters
-        key: string or char - key word argument
-        var: any - default value for parameter
-        keyset: set of user defined kwargs
-
-        Returns
-        var if user defined, else default value
-        """
-        if key in keyset:
-            return kwargs[key]
-        return var
-
-    keyset = kwargs.keys()
-
-    ### Assigning KWARGS ###############
-    tmul = _check("tmul", 19, keyset)  # 25
-    absthresh = _check("absthresh", 100, keyset)
-    sur_time = _check("sur_time", 0.5, keyset)
-    close_to_edge = _check("close_to_edge", 0.05, keyset)
-    too_high_abs = _check("too_high_abs", 1e3, keyset)
-    # tmul above which I reject it as artifact
-    spkdur = _check(
-        "spkdur", np.array([15, 260]), keyset
-    )  # spike duration must be less than this in ms. It gets converted to points here
-    lpf1 = _check("lpf1", 30, keyset)  # low pass filter for spikey component
-    hpf = _check("hpf", 7, keyset)  # high pass filter for spikey component
-    labels = _check("labels", [], keyset)
+    ### Assigning KWARGS using a more efficient method ###############
+    tmul = kwargs.get("tmul", 19)  # 25
+    absthresh = kwargs.get("absthresh", 100)
+    sur_time = kwargs.get("sur_time", 0.5)
+    close_to_edge = kwargs.get("close_to_edge", 0.05)
+    too_high_abs = kwargs.get("too_high_abs", 1e3)
+    # spike duration must be less than this in ms. It gets converted to points here
+    spkdur = kwargs.get("spkdur", np.array([15, 260]))
+    lpf1 = kwargs.get("lpf1", 30)  # low pass filter for spikey component
+    hpf = kwargs.get("hpf", 7)  # high pass filter for spikey component
+    labels = kwargs.get("labels", [])
     ###################################
 
     # Assertions and assignments
@@ -263,6 +244,7 @@ def spike_detector(data, fs, **kwargs):
     spkdur = spkdur * fs / 1000  # change to samples
     labels = np.array(labels)
 
+    start_time = time.time()  # Starting the timer
     for j in range(nchs):  # Loop through each channel and count spikes
         out = []  # initialize preliminary spike receiver
         signal = data[:, j]  # collect channel
@@ -293,14 +275,9 @@ def spike_detector(data, fs, **kwargs):
         thresh = lthresh * tmul
         # this is the final threshold we want to impose
 
-        for k in range(
-            2
-        ):  # loop through the positive and negative spikes (could be accomplished without loop)
-            if k == 1:
-                ksignal = -hpsignal
-            else:
-                ksignal = hpsignal
+        signals = [hpsignal, -hpsignal]
 
+        for ksignal in signals:
             # apply custom peak finder /IES_helper_functions.py
             spp, spv = find_peaks(ksignal)  # calculate peaks and troughs
             spp, spv = spp.squeeze(), spv.squeeze()  # reformat
@@ -381,15 +358,17 @@ def spike_detector(data, fs, **kwargs):
             fullSurround = np.array([-sur_time, sur_time]) * fs
             idxToPeak = timeToPeak * fs
 
+            hpsignal_length = len(hpsignal)
+
             for i in range(len(out)):
                 currIdx = out[i]
                 surround_idx = np.arange(
                     max(0, round(currIdx + fullSurround[0])),
-                    min(round(currIdx + fullSurround[1]), len(hpsignal)),
+                    min(round(currIdx + fullSurround[1]), hpsignal_length),
                 )
                 idxToLook = np.arange(
                     max(0, round(currIdx + idxToPeak[0])),
-                    min(round(currIdx + idxToPeak[1]), len(hpsignal)),
+                    min(round(currIdx + idxToPeak[1]), hpsignal_length),
                 )
                 snapshot = hpsignal[idxToLook] - np.median(hpsignal[surround_idx])
                 # Look at the high frequency signal (where the mean is substracted already)
@@ -410,6 +389,10 @@ def spike_detector(data, fs, **kwargs):
             # all_spikes = np.vstack((all_spikes,temp))
             all_spikes.append(temp)
             # change all spikes to a list, append and then vstack all at end
+
+    end_time = time.time()  # Ending the timer
+    duration = end_time - start_time  # Calculating the duration
+    print(f"'the big loop' took {duration:.4f} seconds to execute.")
 
     # Final Post-Processing - sort spikes by time not np.isnan(all_spikes).all():
     if len(all_spikes) == 0:
@@ -456,6 +439,10 @@ def spike_detector(data, fs, **kwargs):
 
     # Check that spike occurs in multiple channels
     if gdf.any() & (nchs > 1):
+        start_time = time.time()  # Starting the timer
         gdf = multi_channel_requirement(gdf, nchs, fs)
+        end_time = time.time()  # Ending the timer
+        duration = end_time - start_time  # Calculating the duration
+        print(f"'multi_channel_requirement' took {duration:.4f} seconds to execute.")
 
     return gdf
