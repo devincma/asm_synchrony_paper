@@ -1,15 +1,9 @@
-from select import select
 import numpy as np
-from numpy import matlib
-import scipy as sc
-from scipy import signal as sig
-import matplotlib.pyplot as plt
 from get_iEEG_data import *
 from IES_helper_functions import *  # _eegfilt,_FindPeaks,_make_fake,_multi_channel_requirement,_car,_electrode_selection
-import sys
 
 
-def ies_detector(data=None, fs: int = 200, **kwargs):
+def ies_detector(data, fs, **kwargs):
     """
     Parameters
     data:           np.NDArray - iEEG recordings (m samples x n channels)
@@ -24,7 +18,6 @@ def ies_detector(data=None, fs: int = 200, **kwargs):
     spkdur:         Iterable - min and max spike duration thresholds in ms (min, max)
     lpf1:           float - low pass filter cutoff frequency
     hpf:            float - high pass filter cutoff frequency
-    plot_sig:       bool - save default figures
     fig_path:       String - file path for saving figures
 
     Returns
@@ -61,14 +54,11 @@ def ies_detector(data=None, fs: int = 200, **kwargs):
     )  # spike duration must be less than this in ms. It gets converted to points here
     lpf1 = _check("lpf1", 30, keyset)  # low pass filter for spikey component
     hpf = _check("hpf", 7, keyset)  # high pass filter for spikey component
-    plot_sig = _check("plot_sig", True, keyset)
     fig_path = _check("fig_path", "", keyset)
     labels = _check("labels", [], keyset)
     ###################################
 
     # Assertions and assignments
-    if data is None:
-        data = make_fake()
     if not isinstance(spkdur, np.ndarray):
         spkdur = np.array(spkdur)
 
@@ -104,18 +94,6 @@ def ies_detector(data=None, fs: int = 200, **kwargs):
         hpsignal = eegfilt(lpsignal, hpf, "highpass", fs)
         # high pass filter
         high_passes[:, j] = hpsignal  # collect signals for later plotting
-
-        # plotting the different filtered signals
-        if plot_sig:
-            fig, axs1 = plt.subplots(3, 1)
-            axs1[0].plot(signal)
-            axs1[0].set_title("Raw Signal")
-            axs1[1].plot(lpsignal)
-            axs1[1].set_title("Low Pass Signal")
-            axs1[2].plot(hpsignal)
-            axs1[2].set_title("High Pass Signal")
-            fig.savefig(fig_path + "filtering_plot.png")
-            plt.close(fig)
 
         # defining thresholds
         lthresh = np.median(abs(hpsignal))
@@ -240,16 +218,6 @@ def ies_detector(data=None, fs: int = 200, **kwargs):
             # all_spikes = np.vstack((all_spikes,temp))
             all_spikes.append(temp)
             # change all spikes to a list, append and then vstack all at end
-        if plot_sig and out.any():
-            fig, ax = plt.subplots(3, 1)
-            ax[0].plot(signal)
-            ax[0].plot(out, signal[out.astype(int)], "ro")
-            ax[1].plot(lpsignal)
-            ax[1].plot(out, lpsignal[out.astype(int)], "ro")
-            ax[2].plot(hpsignal)
-            ax[2].plot(out, hpsignal[out.astype(int)], "ro")
-            fig.savefig(fig_path + "channel_spikes.png")
-            plt.close(fig)
 
     # Final Post-Processing - sort spikes by time not np.isnan(all_spikes).all():
     if len(all_spikes) == 0:
@@ -297,52 +265,5 @@ def ies_detector(data=None, fs: int = 200, **kwargs):
     # Check that spike occurs in multiple channels
     if gdf.any() & (nchs > 1):
         gdf = multi_channel_requirement(gdf, nchs, fs)
-
-    # plot the waveforms of all spikes and spike locations on all channels
-    if plot_sig:
-        pre_spike = 0.025
-        post_spike = 0.025
-        pre_idxs = pre_spike * fs
-        post_idxs = post_spike * fs
-        aligned_time = np.arange(-pre_spike, post_spike, 1 / fs)
-        fig, axs = plt.subplots()
-        if gdf.any():
-            _, spidxs = np.unique(gdf[:, 1], return_index=True)
-            for spike in range(gdf.shape[0]):
-                if spike + post_idxs < len(hpsignal):
-                    mask = np.arange(spike - pre_idxs, spike + post_idxs, dtype=int)
-                    axs.plot(aligned_time, hpsignal[mask])
-        fig.savefig(fig_path + "spike_plot.png")
-        plt.close(fig)
-
-        fig, ax = plt.subplots(figsize=(24, 8))  ### CHANGE THIS FOR MORE CHANNELS
-        # channels = np.unique(gdf[:,1]).astype(int)
-        temp = data  # [:,channels]
-        # temp_labels = labels[channels]
-
-        channel_offsets = np.insert(
-            np.cumsum(
-                np.abs(np.min(temp[:, 1:], axis=0)) + np.max(temp[:, :-1], axis=0)
-            ),
-            0,
-            0,
-        )
-
-        temp2 = temp + channel_offsets
-        time = np.arange(len(temp2)) / fs
-        ax.plot(time, temp2, "k", linewidth=0.2)
-        if gdf.any():
-            for idx in range(gdf.shape[0]):
-                spike = gdf[idx, 0]
-                plt.plot(
-                    time[int(spike)],
-                    temp2[int(gdf[idx, 0]), int(gdf[idx, 1])],
-                    "ro",
-                    alpha=1,
-                )
-        ax.set_yticks(channel_offsets)
-        ax.set_yticklabels(labels)
-        fig.savefig(fig_path + "all_spikes.png")
-        plt.close(fig)
 
     return gdf

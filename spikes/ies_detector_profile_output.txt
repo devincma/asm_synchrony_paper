@@ -1,0 +1,252 @@
+Fri Aug 11 21:10:55 2023    ies_detector_profile.stats
+
+         1961858 function calls (1936817 primitive calls) in 7.099 seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        2    0.000    0.000    7.099    3.549 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/IPython/core/interactiveshell.py:3472(run_code)
+        2    0.000    0.000    7.099    3.549 {built-in method builtins.exec}
+        1    0.001    0.001    7.099    7.099 /tmp/ipykernel_32786/1771983501.py:1(<module>)
+        1    3.803    3.803    7.098    7.098 /mnt/leif/littlab/users/devinma/Code/spikes/IES_detector.py:6(ies_detector)
+      190    1.260    0.007    1.260    0.007 {built-in method builtins.sum}
+      380    0.001    0.000    0.626    0.002 /mnt/leif/littlab/users/devinma/Code/spikes/IES_helper_functions.py:6(eegfilt)
+50367/25326    0.054    0.000    0.538    0.000 {built-in method numpy.core._multiarray_umath.implement_array_function}
+   706789    0.495    0.000    0.495    0.000 {built-in method builtins.abs}
+      380    0.005    0.000    0.493    0.001 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/scipy/signal/_signaltools.py:3960(filtfilt)
+      760    0.001    0.000    0.437    0.001 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/scipy/signal/_signaltools.py:1936(lfilter)
+      760    0.433    0.001    0.433    0.001 {built-in method scipy.signal._sigtools._linear_filter}
+   356678    0.330    0.000    0.330    0.000 {built-in method builtins.max}
+     3634    0.003    0.000    0.266    0.000 <__array_function__ internals>:177(median)
+     3634    0.003    0.000    0.260    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/function_base.py:3774(median)
+     3634    0.008    0.000    0.256    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/function_base.py:3692(_ureduce)
+     3634    0.022    0.000    0.247    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/function_base.py:3860(_median)
+      380    0.046    0.000    0.155    0.000 /mnt/leif/littlab/users/devinma/Code/spikes/IES_helper_functions.py:15(FindPeaks)
+      380    0.001    0.000    0.132    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/scipy/signal/_filter_design.py:2980(butter)
+      380    0.006    0.000    0.132    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/scipy/signal/_filter_design.py:2361(iirfilter)
+     3634    0.003    0.000    0.122    0.000 <__array_function__ internals>:177(partition)
+     3634    0.004    0.000    0.116    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:675(partition)
+     3634    0.104    0.000    0.104    0.000 {method 'partition' of 'numpy.ndarray' objects}
+   351387    0.088    0.000    0.088    0.000 {built-in method builtins.any}
+      380    0.003    0.000    0.070    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/scipy/signal/_filter_design.py:1097(zpk2tf)
+     3824    0.004    0.000    0.063    0.000 <__array_function__ internals>:177(mean)
+      760    0.001    0.000    0.063    0.000 <__array_function__ internals>:177(poly)
+      760    0.011    0.000    0.058    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/polynomial.py:44(poly)
+     3824    0.006    0.000    0.056    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:3345(mean)
+     3824    0.015    0.000    0.051    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/_methods.py:164(_mean)
+     9224    0.007    0.000    0.049    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:51(_wrapfunc)
+     1521    0.001    0.000    0.046    0.000 <__array_function__ internals>:177(argwhere)
+     1521    0.003    0.000    0.044    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/numeric.py:578(argwhere)
+      760    0.001    0.000    0.037    0.000 <__array_function__ internals>:177(insert)
+      760    0.020    0.000    0.034    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/function_base.py:5250(insert)
+     3634    0.014    0.000    0.033    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/utils.py:1086(_median_nancheck)
+     6866    0.030    0.000    0.030    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+     1141    0.001    0.000    0.028    0.000 <__array_function__ internals>:177(diff)
+     1521    0.001    0.000    0.027    0.000 <__array_function__ internals>:177(nonzero)
+      380    0.006    0.000    0.027    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/scipy/signal/_signaltools.py:3569(lfilter_zi)
+     4714    0.003    0.000    0.025    0.000 <__array_function__ internals>:177(around)
+     1521    0.001    0.000    0.025    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:1892(nonzero)
+     1141    0.024    0.000    0.025    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/function_base.py:1320(diff)
+     4560    0.003    0.000    0.024    0.000 <__array_function__ internals>:177(convolve)
+     1521    0.023    0.000    0.023    0.000 {method 'nonzero' of 'numpy.ndarray' objects}
+      380    0.007    0.000    0.022    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/scipy/signal/_filter_design.py:2613(bilinear_zpk)
+     7268    0.008    0.000    0.019    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/numerictypes.py:356(issubdtype)
+     6115    0.004    0.000    0.018    0.000 <__array_function__ internals>:177(atleast_1d)
+     4560    0.008    0.000    0.018    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/numeric.py:755(convolve)
+      380    0.001    0.000    0.017    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/scipy/signal/_signaltools.py:4162(_validate_pad)
+      380    0.005    0.000    0.016    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/scipy/signal/_arraytools.py:55(odd_ext)
+     2660    0.005    0.000    0.016    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:69(_wrapreduction)
+     4714    0.003    0.000    0.016    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:3245(around)
+     1178    0.001    0.000    0.013    0.000 <__array_function__ internals>:177(concatenate)
+     1140    0.001    0.000    0.013    0.000 <__array_function__ internals>:177(any)
+     1521    0.001    0.000    0.011    0.000 <__array_function__ internals>:177(transpose)
+      760    0.001    0.000    0.011    0.000 <__array_function__ internals>:177(moveaxis)
+    14536    0.007    0.000    0.010    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/numerictypes.py:282(issubclass_)
+     3824    0.008    0.000    0.010    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/_methods.py:67(_count_reduce_items)
+      760    0.004    0.000    0.010    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/numeric.py:1411(moveaxis)
+     6115    0.007    0.000    0.010    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/shape_base.py:23(atleast_1d)
+      380    0.000    0.000    0.010    0.000 <__array_function__ internals>:177(solve)
+     1140    0.001    0.000    0.009    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:2333(any)
+     1521    0.001    0.000    0.009    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:601(transpose)
+      190    0.002    0.000    0.009    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/scipy/signal/_filter_design.py:2755(lp2hp_zpk)
+     4714    0.009    0.000    0.009    0.000 {method 'round' of 'numpy.generic' objects}
+     3634    0.003    0.000    0.009    0.000 <__array_function__ internals>:177(count_nonzero)
+      380    0.004    0.000    0.009    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/linalg/linalg.py:306(solve)
+     1140    0.001    0.000    0.008    0.000 <__array_function__ internals>:177(prod)
+    16125    0.008    0.000    0.008    0.000 {built-in method numpy.array}
+     4348    0.007    0.000    0.007    0.000 {built-in method builtins.round}
+      380    0.006    0.000    0.007    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/scipy/linalg/_special_matrices.py:553(companion)
+     3690    0.007    0.000    0.007    0.000 {method 'flatten' of 'numpy.ndarray' objects}
+     1521    0.003    0.000    0.007    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:38(_wrapit)
+     4560    0.007    0.000    0.007    0.000 {built-in method numpy.core._multiarray_umath.correlate}
+     1140    0.001    0.000    0.007    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:2955(prod)
+      193    0.000    0.000    0.006    0.000 <__array_function__ internals>:177(vstack)
+      570    0.000    0.000    0.006    0.000 <__array_function__ internals>:177(append)
+      380    0.005    0.000    0.006    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/scipy/signal/_filter_design.py:4315(buttap)
+    32872    0.006    0.000    0.006    0.000 {built-in method builtins.issubclass}
+     1176    0.001    0.000    0.005    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/numeric.py:150(ones)
+      193    0.001    0.000    0.005    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/shape_base.py:223(vstack)
+     1608    0.004    0.000    0.005    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/numeric.py:1348(normalize_axis_tuple)
+     1087    0.001    0.000    0.005    0.000 <__array_function__ internals>:177(argmax)
+      570    0.001    0.000    0.005    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/function_base.py:5444(append)
+     1140    0.002    0.000    0.005    0.000 {method 'any' of 'numpy.generic' objects}
+     3634    0.005    0.000    0.005    0.000 {method 'take' of 'numpy.ndarray' objects}
+     1522    0.001    0.000    0.005    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/_methods.py:55(_any)
+    25230    0.004    0.000    0.004    0.000 {built-in method numpy.asanyarray}
+    43441    0.004    0.000    0.004    0.000 {built-in method builtins.len}
+      760    0.002    0.000    0.004    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/type_check.py:26(mintypecode)
+     2554    0.004    0.000    0.004    0.000 {built-in method numpy.arange}
+     3420    0.004    0.000    0.004    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/scipy/signal/_arraytools.py:7(axis_slice)
+      760    0.001    0.000    0.004    0.000 <__array_function__ internals>:177(sort)
+     1087    0.001    0.000    0.003    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:1153(argmax)
+     4182    0.003    0.000    0.003    0.000 {built-in method numpy.asarray}
+      380    0.000    0.000    0.003    0.000 <__array_function__ internals>:177(all)
+     3634    0.002    0.000    0.003    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/numeric.py:432(count_nonzero)
+     1176    0.001    0.000    0.003    0.000 <__array_function__ internals>:177(copyto)
+     3634    0.003    0.000    0.003    0.000 {method 'ravel' of 'numpy.generic' objects}
+      193    0.000    0.000    0.003    0.000 <__array_function__ internals>:177(atleast_2d)
+    13502    0.003    0.000    0.003    0.000 {built-in method builtins.isinstance}
+      190    0.001    0.000    0.003    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/scipy/signal/_filter_design.py:2695(lp2lp_zpk)
+    21952    0.003    0.000    0.003    0.000 {method 'append' of 'list' objects}
+      380    0.000    0.000    0.003    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:2432(all)
+     3634    0.002    0.000    0.003    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/ma/core.py:6462(isMaskedArray)
+      193    0.001    0.000    0.003    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/shape_base.py:81(atleast_2d)
+      760    0.001    0.000    0.002    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:878(sort)
+        1    0.001    0.001    0.002    0.002 /mnt/leif/littlab/users/devinma/Code/spikes/IES_helper_functions.py:34(multi_channel_requirement)
+    12649    0.002    0.000    0.002    0.000 {built-in method builtins.getattr}
+     1521    0.001    0.000    0.002    0.000 <__array_function__ internals>:177(ndim)
+      380    0.001    0.000    0.002    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/linalg/linalg.py:136(_commonType)
+     5291    0.002    0.000    0.002    0.000 {built-in method builtins.min}
+      380    0.002    0.000    0.002    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/twodim_base.py:162(eye)
+      570    0.000    0.000    0.002    0.000 <__array_function__ internals>:177(ravel)
+      380    0.000    0.000    0.002    0.000 <__array_function__ internals>:177(reshape)
+      570    0.000    0.000    0.002    0.000 <__array_function__ internals>:177(real)
+     2660    0.002    0.000    0.002    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:70(<dictcomp>)
+      382    0.000    0.000    0.002    0.000 {method 'any' of 'numpy.ndarray' objects}
+       88    0.000    0.000    0.002    0.000 <__array_function__ internals>:177(tile)
+     3634    0.001    0.000    0.001    0.000 {built-in method numpy.core._multiarray_umath.count_nonzero}
+     1520    0.001    0.000    0.001    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/type_check.py:72(<genexpr>)
+     6573    0.001    0.000    0.001    0.000 {built-in method numpy.core._multiarray_umath.normalize_axis_index}
+       88    0.001    0.000    0.001    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/shape_base.py:1191(tile)
+       88    0.000    0.000    0.001    0.000 <__array_function__ internals>:177(expand_dims)
+      380    0.000    0.000    0.001    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:198(reshape)
+      570    0.001    0.000    0.001    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:1781(ravel)
+     1087    0.001    0.000    0.001    0.000 {method 'argmax' of 'numpy.ndarray' objects}
+     1992    0.001    0.000    0.001    0.000 {built-in method numpy.empty}
+     4052    0.001    0.000    0.001    0.000 {built-in method builtins.hasattr}
+      760    0.000    0.000    0.001    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/scipy/signal/_arraytools.py:47(axis_reverse)
+       88    0.001    0.000    0.001    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/shape_base.py:512(expand_dims)
+     1608    0.001    0.000    0.001    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/numeric.py:1398(<listcomp>)
+     1140    0.001    0.000    0.001    0.000 {method 'astype' of 'numpy.ndarray' objects}
+     8028    0.001    0.000    0.001    0.000 {method 'get' of 'dict' objects}
+        1    0.001    0.001    0.001    0.001 /mnt/leif/littlab/users/devinma/Code/spikes/IES_detector.py:227(<setcomp>)
+      816    0.001    0.000    0.001    0.000 {method 'sort' of 'numpy.ndarray' objects}
+      380    0.000    0.000    0.001    0.000 <__array_function__ internals>:177(size)
+     2282    0.001    0.000    0.001    0.000 {method 'transpose' of 'numpy.ndarray' objects}
+     1022    0.001    0.000    0.001    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+      760    0.001    0.000    0.001    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/linalg/linalg.py:112(_makearray)
+      380    0.001    0.000    0.001    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/scipy/signal/_filter_design.py:2495(<listcomp>)
+     1140    0.001    0.000    0.001    0.000 {method 'copy' of 'numpy.ndarray' objects}
+     6115    0.001    0.000    0.001    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/shape_base.py:19(_atleast_1d_dispatcher)
+     4714    0.001    0.000    0.001    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:3241(_around_dispatcher)
+     1520    0.001    0.000    0.001    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/type_check.py:70(<genexpr>)
+       56    0.000    0.000    0.001    0.000 <__array_function__ internals>:177(unique)
+      760    0.001    0.000    0.001    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/scipy/signal/_filter_design.py:2601(_relative_degree)
+     3824    0.001    0.000    0.001    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:3340(_mean_dispatcher)
+      380    0.001    0.000    0.001    0.000 {method 'conjugate' of 'numpy.ndarray' objects}
+     4560    0.001    0.000    0.001    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/numeric.py:751(_convolve_dispatcher)
+      950    0.001    0.000    0.001    0.000 {built-in method numpy.zeros}
+      760    0.001    0.000    0.001    0.000 {built-in method builtins.sorted}
+     3634    0.001    0.000    0.001    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/function_base.py:3769(_median_dispatcher)
+       56    0.000    0.000    0.001    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/arraysetops.py:138(unique)
+      380    0.000    0.000    0.001    0.000 <__array_function__ internals>:177(result_type)
+     3634    0.001    0.000    0.001    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/numeric.py:428(_count_nonzero_dispatcher)
+     3634    0.001    0.000    0.001    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:671(_partition_dispatcher)
+     1609    0.001    0.000    0.001    0.000 {method 'squeeze' of 'numpy.ndarray' objects}
+       56    0.000    0.000    0.001    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/arraysetops.py:323(_unique1d)
+     1140    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/linalg/linalg.py:117(isComplexType)
+      228    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/shape_base.py:218(_vhstack_dispatcher)
+      760    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/linalg/linalg.py:130(_realType)
+       35    0.000    0.000    0.000    0.000 <__array_function__ internals>:177(hstack)
+     2660    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
+     1521    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:3152(ndim)
+      570    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/type_check.py:121(real)
+       35    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/shape_base.py:299(hstack)
+      570    0.000    0.000    0.000    0.000 {method 'ravel' of 'numpy.ndarray' objects}
+      228    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/shape_base.py:207(_arrays_for_stack_dispatcher)
+     2280    0.000    0.000    0.000    0.000 {built-in method _operator.index}
+     1521    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/numeric.py:574(_argwhere_dispatcher)
+      380    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/linalg/linalg.py:186(_assert_stacked_square)
+      760    0.000    0.000    0.000    0.000 {method 'item' of 'numpy.ndarray' objects}
+     1141    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/function_base.py:1316(_diff_dispatcher)
+     1140    0.000    0.000    0.000    0.000 {method 'lower' of 'str' objects}
+      760    0.000    0.000    0.000    0.000 {method 'insert' of 'list' objects}
+      760    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/numeric.py:1473(<listcomp>)
+     1176    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/multiarray.py:1079(copyto)
+     1521    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:3148(_ndim_dispatcher)
+      380    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/linalg/linalg.py:107(get_linalg_error_extobj)
+     1521    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:597(_transpose_dispatcher)
+     1140    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:2328(_any_dispatcher)
+     1521    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:1888(_nonzero_dispatcher)
+     1178    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/multiarray.py:152(concatenate)
+     1087    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:1149(_argmax_dispatcher)
+     1140    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:2950(_prod_dispatcher)
+      380    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/linalg/linalg.py:180(_assert_stacked_2d)
+      760    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/function_base.py:5246(_insert_dispatcher)
+      760    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/numeric.py:1407(_moveaxis_dispatcher)
+       86    0.000    0.000    0.000    0.000 {method 'repeat' of 'numpy.ndarray' objects}
+      760    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:874(_sort_dispatcher)
+       88    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/shape_base.py:600(<listcomp>)
+      760    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/polynomial.py:40(_poly_dispatcher)
+      380    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:3194(size)
+      570    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/function_base.py:5440(_append_dispatcher)
+      570    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/type_check.py:117(_real_dispatcher)
+      264    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/shape_base.py:1273(<genexpr>)
+      380    0.000    0.000    0.000    0.000 {method '__array_prepare__' of 'numpy.ndarray' objects}
+      570    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:1777(_ravel_dispatcher)
+      380    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/linalg/linalg.py:302(_solve_dispatcher)
+       88    0.000    0.000    0.000    0.000 {built-in method builtins.all}
+      380    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:2427(_all_dispatcher)
+      380    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:193(_reshape_dispatcher)
+      380    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:3190(_size_dispatcher)
+      178    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/shape_base.py:1263(<genexpr>)
+        2    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/codeop.py:117(__call__)
+        1    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/pandas/core/frame.py:1780(to_numpy)
+        2    0.000    0.000    0.000    0.000 {built-in method builtins.compile}
+      380    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/multiarray.py:668(result_type)
+        1    0.000    0.000    0.000    0.000 <__array_function__ internals>:177(argsort)
+        1    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:1038(argsort)
+        2    0.000    0.000    0.000    0.000 <__array_function__ internals>:177(empty_like)
+        1    0.000    0.000    0.000    0.000 {method 'argsort' of 'numpy.ndarray' objects}
+       92    0.000    0.000    0.000    0.000 {built-in method builtins.next}
+      193    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/shape_base.py:77(_atleast_2d_dispatcher)
+       56    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/arraysetops.py:125(_unpack_tuple)
+        1    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/pandas/core/generic.py:5973(_consolidate_inplace)
+        1    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/pandas/core/internals/managers.py:1721(as_array)
+        1    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/pandas/core/generic.py:5959(_protect_consolidate)
+       88    0.000    0.000    0.000    0.000 {built-in method builtins.iter}
+       88    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/shape_base.py:1187(_tile_dispatcher)
+       88    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/shape_base.py:508(_expand_dims_dispatcher)
+        1    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/pandas/core/generic.py:5977(f)
+        2    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/contextlib.py:287(helper)
+        2    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/traitlets/traitlets.py:692(__get__)
+       56    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/lib/arraysetops.py:133(_unique_dispatcher)
+        2    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/contextlib.py:104(__init__)
+        2    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/contextlib.py:132(__enter__)
+        2    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/contextlib.py:141(__exit__)
+        1    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/pandas/core/internals/blocks.py:1912(get_values)
+        2    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/traitlets/traitlets.py:654(get)
+        4    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/IPython/core/compilerop.py:180(extra_flags)
+        2    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/IPython/core/interactiveshell.py:3424(compare)
+        1    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/pandas/core/internals/managers.py:673(consolidate)
+        1    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/pandas/core/generic.py:5904(__setattr__)
+       10    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Code/spikes/IES_detector.py:28(_check)
+        2    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/IPython/core/interactiveshell.py:1229(user_global_ns)
+        1    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/pandas/core/internals/managers.py:1846(is_consolidated)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        1    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/pandas/core/internals/managers.py:233(is_single_block)
+        1    0.000    0.000    0.000    0.000 {method 'keys' of 'dict' objects}
+        2    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/multiarray.py:84(empty_like)
+        1    0.000    0.000    0.000    0.000 /mnt/leif/littlab/users/devinma/Libraries/miniconda3/lib/python3.11/site-packages/numpy/core/fromnumeric.py:1034(_argsort_dispatcher)
+
+

@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from scipy import signal as sig
 
 
@@ -30,23 +29,6 @@ def FindPeaks(signal):
     t = np.argwhere(ds > 0)
     p = np.argwhere(ds < 0)
     return p, t
-
-
-def make_fake(n_spikes=3):
-    toy = lambda x, a, b: np.sin((x * a * 2 * np.pi - b * (2 * np.pi)))
-    tfs = 200
-    slen = 10
-    x = np.linspace(0, slen, slen * tfs)
-    data1 = toy(x, 10, 0) + toy(x, 25, 0)
-    data2 = toy(x, 15, 0) + toy(x, 27, 0)
-    data = np.array([data1, data2]).T
-    np.random.seed(2 * 3 * 5 * 8 * 13)
-    data += np.random.normal(size=data.shape)
-    data *= 100
-    for s in range(n_spikes):
-        base = np.random.randint(tfs, data.shape[0] - tfs)
-        data[base : base + 20, :] *= 5
-    return data
 
 
 def multi_channel_requirement(gdf, nchs, fs):
@@ -311,109 +293,199 @@ def identify_bad_channels(values, channel_indices, channel_labels, fs):
     return bad, details
 
 
-def detect_bad_channels(values, fs, channel_labels):
-    """
-    data: raw EEG traces after filtering (i think)
-    fs: sampling frequency
-    channel_labels: string labels of channels to use
-    """
+# def detect_bad_channels(values, fs, channel_labels):
+#     """
+#     data: raw EEG traces after filtering (i think)
+#     fs: sampling frequency
+#     channel_labels: string labels of channels to use
+#     """
+#     which_chs = np.arange(values.shape[1])
+#     chLabels = channel_labels
+#     ## Parameters to reject super high variance
+#     tile = 99
+#     mult = 10
+#     num_above = 1
+#     abs_thresh = 5e3
+
+#     ## Parameter to reject high 60 Hz
+#     percent_60_hz = 0.7
+
+#     ## Parameter to reject electrodes with much higher std than most electrodes
+#     mult_std = 10
+
+#     bad = []
+#     high_ch = []
+#     nan_ch = []
+#     zero_ch = []
+#     high_var_ch = []
+#     noisy_ch = []
+#     all_std = np.empty((len(which_chs), 1))
+#     all_std[:] = np.nan
+#     details = {}
+
+#     for i in range(len(which_chs)):
+#         # print(chLabels[i])
+
+#         ich = which_chs[i]
+#         eeg = values[:, ich]
+#         bl = np.nanmedian(eeg)
+
+#         ## Get channel standard deviation
+#         all_std[i] = np.nanstd(eeg)
+
+#         ## Remove channels with nans in more than half
+#         if sum(np.isnan(eeg)) > 0.5 * len(eeg):
+#             bad.append(ich)
+#             nan_ch.append(ich)
+#             continue
+
+#         ## Remove channels with zeros in more than half
+#         if sum(eeg == 0) > (0.5 * len(eeg)):
+#             bad.append(ich)
+#             zero_ch.append(ich)
+#             continue
+
+#         ## Remove channels with too many above absolute thresh
+
+#         if sum(abs(eeg - bl) > abs_thresh) > 10:
+#             bad.append(ich)
+#             high_ch.append(ich)
+#             continue
+
+#         ## Remove channels if there are rare cases of super high variance above baseline (disconnection, moving, popping)
+#         pct = np.percentile(eeg, [100 - tile, tile])
+#         thresh = [bl - mult * (bl - pct[0]), bl + mult * (pct[1] - bl)]
+#         sum_outside = sum(((eeg > thresh[1]) + (eeg < thresh[0])) > 0)
+#         if sum_outside >= num_above:
+#             bad.append(ich)
+#             high_var_ch.append(ich)
+#             continue
+
+#         ## Remove channels with a lot of 60 Hz noise, suggesting poor impedance
+
+#         # Calculate fft
+#         # orig_eeg = orig_values(:,ich)
+#         # Y = fft(orig_eeg-mean(orig_eeg))
+#         Y = np.fft.fft(eeg - np.nanmean(eeg))
+
+#         # Get power
+#         P = abs(Y) ** 2
+#         freqs = np.linspace(0, fs, len(P) + 1)
+#         freqs = freqs[:-1]
+
+#         # Take first half
+#         P = P[: np.ceil(len(P) / 2).astype(int)]
+#         freqs = freqs[: np.ceil(len(freqs) / 2).astype(int)]
+
+#         P_60Hz = sum(P[(freqs > 58) * (freqs < 62)]) / sum(P)
+#         if P_60Hz > percent_60_hz:
+#             bad.append(ich)
+#             noisy_ch.append(ich)
+#             continue
+
+#     ## Remove channels for whom the std is much larger than the baseline
+#     median_std = np.nanmedian(all_std)
+#     higher_std = which_chs[(all_std > (mult_std * median_std)).squeeze()]
+#     bad_std = higher_std
+#     for ch in bad_std:
+#         if ch not in bad:
+#             bad.append(ch)
+#     channel_mask = [i for i in which_chs if i not in bad]
+#     details["noisy"] = noisy_ch
+#     details["nans"] = nan_ch
+#     details["zeros"] = zero_ch
+#     details["var"] = high_var_ch
+#     details["higher_std"] = bad_std
+#     details["high_voltage"] = high_ch
+
+#     return channel_mask, details
+
+
+def detect_bad_channels_optimized(values, fs):
     which_chs = np.arange(values.shape[1])
-    chLabels = channel_labels
-    ## Parameters to reject super high variance
+
+    ## Parameters
     tile = 99
     mult = 10
     num_above = 1
     abs_thresh = 5e3
-
-    ## Parameter to reject high 60 Hz
     percent_60_hz = 0.7
-
-    ## Parameter to reject electrodes with much higher std than most electrodes
     mult_std = 10
 
-    bad = []
+    bad = set()
     high_ch = []
     nan_ch = []
     zero_ch = []
     high_var_ch = []
     noisy_ch = []
-    all_std = np.empty((len(which_chs), 1))
-    all_std[:] = np.nan
-    details = {}
 
-    for i in range(len(which_chs)):
-        # print(chLabels[i])
+    nans_mask = np.isnan(values)
+    zero_mask = values == 0
+    nan_count = np.sum(nans_mask, axis=0)
+    zero_count = np.sum(zero_mask, axis=0)
 
-        ich = which_chs[i]
+    median_values = np.nanmedian(values, axis=0)
+    std_values = np.nanstd(values, axis=0)
+
+    median_std = np.nanmedian(std_values)
+    higher_std = which_chs[std_values > (mult_std * median_std)]
+
+    for ich in which_chs:
         eeg = values[:, ich]
-        bl = np.nanmedian(eeg)
 
-        ## Get channel standard deviation
-        all_std[i] = np.nanstd(eeg)
-
-        ## Remove channels with nans in more than half
-        if sum(np.isnan(eeg)) > 0.5 * len(eeg):
-            bad.append(ich)
+        # Check NaNs
+        if nan_count[ich] > 0.5 * len(eeg):
+            bad.add(ich)
             nan_ch.append(ich)
             continue
 
-        ## Remove channels with zeros in more than half
-        if sum(eeg == 0) > (0.5 * len(eeg)):
-            bad.append(ich)
+        # Check zeros
+        if zero_count[ich] > (0.5 * len(eeg)):
+            bad.add(ich)
             zero_ch.append(ich)
             continue
 
-        ## Remove channels with too many above absolute thresh
-
-        if sum(abs(eeg - bl) > abs_thresh) > 10:
-            bad.append(ich)
+        # Check above absolute threshold
+        if np.sum(np.abs(eeg - median_values[ich]) > abs_thresh) > 10:
+            bad.add(ich)
             high_ch.append(ich)
             continue
 
-        ## Remove channels if there are rare cases of super high variance above baseline (disconnection, moving, popping)
+        # High variance check
         pct = np.percentile(eeg, [100 - tile, tile])
-        thresh = [bl - mult * (bl - pct[0]), bl + mult * (pct[1] - bl)]
-        sum_outside = sum(((eeg > thresh[1]) + (eeg < thresh[0])) > 0)
-        if sum_outside >= num_above:
-            bad.append(ich)
+        thresh = [
+            median_values[ich] - mult * (median_values[ich] - pct[0]),
+            median_values[ich] + mult * (pct[1] - median_values[ich]),
+        ]
+        if np.sum((eeg > thresh[1]) | (eeg < thresh[0])) >= num_above:
+            bad.add(ich)
             high_var_ch.append(ich)
             continue
 
-        ## Remove channels with a lot of 60 Hz noise, suggesting poor impedance
-
-        # Calculate fft
-        # orig_eeg = orig_values(:,ich)
-        # Y = fft(orig_eeg-mean(orig_eeg))
+        # 60 Hz noise check, modified to match original function
         Y = np.fft.fft(eeg - np.nanmean(eeg))
-
-        # Get power
-        P = abs(Y) ** 2
+        P = np.abs(Y) ** 2
         freqs = np.linspace(0, fs, len(P) + 1)
         freqs = freqs[:-1]
-
-        # Take first half
-        P = P[: np.ceil(len(P) / 2).astype(int)]
-        freqs = freqs[: np.ceil(len(freqs) / 2).astype(int)]
-
-        P_60Hz = sum(P[(freqs > 58) * (freqs < 62)]) / sum(P)
+        P = P[: int(np.ceil(len(P) / 2))]
+        freqs = freqs[: int(np.ceil(len(freqs) / 2))]
+        P_60Hz = np.sum(P[(freqs > 58) & (freqs < 62)]) / np.sum(P)
         if P_60Hz > percent_60_hz:
-            bad.append(ich)
+            bad.add(ich)
             noisy_ch.append(ich)
-            continue
 
-    ## Remove channels for whom the std is much larger than the baseline
-    median_std = np.nanmedian(all_std)
-    higher_std = which_chs[(all_std > (mult_std * median_std)).squeeze()]
-    bad_std = higher_std
-    for ch in bad_std:
-        if ch not in bad:
-            bad.append(ch)
+    # Combine all bad channels
+    bad = bad.union(higher_std)
+
+    details = {
+        "noisy": noisy_ch,
+        "nans": nan_ch,
+        "zeros": zero_ch,
+        "var": high_var_ch,
+        "higher_std": list(higher_std),
+        "high_voltage": high_ch,
+    }
+
     channel_mask = [i for i in which_chs if i not in bad]
-    details["noisy"] = noisy_ch
-    details["nans"] = nan_ch
-    details["zeros"] = zero_ch
-    details["var"] = high_var_ch
-    details["higher_std"] = bad_std
-    details["high_voltage"] = high_ch
 
     return channel_mask, details
