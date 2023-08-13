@@ -56,7 +56,7 @@ def find_peaks(signal):
     """
     ds = np.diff(signal, axis=0)
     ds = np.insert(ds, 0, ds[0])  # pad diff
-    mask = np.argwhere(abs(ds[1:]) <= 1e-3).squeeze()  # got rid of +1
+    mask = np.argwhere(np.abs(ds[1:]) <= 1e-3).squeeze()  # got rid of +1
     ds[mask] = ds[mask - 1]
     ds = np.sign(ds)
     ds = np.diff(ds)
@@ -216,7 +216,7 @@ def process_channel(
     hpsignal = eeg_filter(lpsignal, hpf, "highpass", fs)
 
     # defining thresholds
-    lthresh = np.median(abs(hpsignal))
+    lthresh = np.median(np.abs(hpsignal))
     thresh = lthresh * tmul  # this is the final threshold we want to impose
 
     signals = [hpsignal, -hpsignal]
@@ -238,8 +238,8 @@ def process_channel(
             if not any(spkmintic):
                 continue
             max_height = max(
-                abs(ksignal[startdx1[i]] - ksignal[spkmintic]),
-                abs(ksignal[startdx[i]] - ksignal[spkmintic]),
+                np.abs(ksignal[startdx1[i]] - ksignal[spkmintic]),
+                np.abs(ksignal[startdx[i]] - ksignal[spkmintic]),
             )[0]
             if max_height > thresh:  # see if the peaks are big enough
                 spike_times.append(int(spkmintic))  # add index to the spike list
@@ -268,7 +268,7 @@ def process_channel(
         )  # find +2s index, ensuring not to exceed idx bounds
 
         alt_thresh = (
-            np.median(abs(hpsignal[istart:iend])) * tmul
+            np.median(np.abs(hpsignal[istart:iend])) * tmul
         )  # identify threshold within this window
 
         if (spikes[i, 2] > alt_thresh) & (
@@ -305,7 +305,7 @@ def process_channel(
                 min(round(currIdx + idxToPeak[1]), hpsignal_length),
             )
             snapshot = hpsignal[idxToLook] - np.median(hpsignal[surround_idx])
-            I = np.argmax(abs(snapshot))
+            I = np.argmax(np.abs(snapshot))
             out[i] = idxToLook[0] + I
 
     return np.array(out)
@@ -406,7 +406,6 @@ def spike_detector(data, fs, **kwargs):
         gdf = all_spikes[idx, :]
 
         # if there are no spikes, just give up
-
         # print('No spikes detected')
 
     # if all_spikes.any():
@@ -428,7 +427,7 @@ def spike_detector(data, fs, **kwargs):
         # distance between spike times
         gdf_diff = np.diff(gdf, axis=0)
         # time difference is below threshold - thresh not necessary becasue of spike realignment
-        mask1 = abs(gdf_diff[:, 0]) < 100e-3 * fs
+        mask1 = np.abs(gdf_diff[:, 0]) < 100e-3 * fs
         # ensuring they're on different channels
         mask2 = gdf_diff[:, 1] == 0
         too_close = np.argwhere(mask1 & mask2) + 1
