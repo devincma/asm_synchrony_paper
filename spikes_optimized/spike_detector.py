@@ -1,7 +1,6 @@
 import numpy as np
 from scipy import signal as sig
 from get_iEEG_data import *
-import time
 import concurrent.futures
 
 
@@ -404,10 +403,6 @@ def spike_detector(data, fs, **kwargs):
             except Exception as exc:
                 print(f"Channel {j} generated an exception: {exc}")
 
-    end_time = time.time()  # Ending the timer
-    duration = end_time - start_time  # Calculating the duration
-    print(f"'the big loop' took {duration:.4f} seconds to execute.")
-
     # Final Post-Processing - sort spikes by time not np.isnan(all_spikes).all():
     if len(all_spikes) == 0:
         return np.array([])
@@ -453,10 +448,6 @@ def spike_detector(data, fs, **kwargs):
 
     # Check that spike occurs in multiple channels
     if gdf.any() & (nchs > 1):
-        start_time = time.time()  # Starting the timer
         gdf = multi_channel_requirement(gdf, nchs, fs)
-        end_time = time.time()  # Ending the timer
-        duration = end_time - start_time  # Calculating the duration
-        print(f"'multi_channel_requirement' took {duration:.4f} seconds to execute.")
 
     return gdf
