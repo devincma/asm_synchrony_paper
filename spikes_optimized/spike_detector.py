@@ -357,12 +357,9 @@ def spike_detector(data, fs, **kwargs):
     # all_spikes = np.ndarray((1,2),dtype=float)
     all_spikes = []
     nchs = data.shape[1]
-    high_passes = np.empty_like(data)
-    low_passes = np.empty_like(data)
     spkdur = spkdur * fs / 1000  # change to samples
     labels = np.array(labels)
 
-    start_time = time.time()  # Starting the timer
     with concurrent.futures.ProcessPoolExecutor() as executor:
         futures_to_channel = {
             executor.submit(
