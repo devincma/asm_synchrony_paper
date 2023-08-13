@@ -1,7 +1,6 @@
+import concurrent.futures
 import numpy as np
 from scipy import signal as sig
-from get_iEEG_data import *
-import concurrent.futures
 
 
 def eeg_filter(signal, fc, filttype, fs):
@@ -47,9 +46,6 @@ def find_peaks(signal):
         2. An array of indices indicating the locations of the peaks.
 
     Notes:
-    - Author: Nagi Hatoum
-    - Copyright: 2005
-    - This implementation was adapted from Erin Conrad.
     - Peaks are regions where the signal increases and then decreases, while troughs are regions where the signal decreases and then increases.
     - This function may not capture all peaks or troughs if the signal has very small fluctuations or noise.
 
@@ -202,10 +198,10 @@ def process_channel(
 ):
     out = []  # initialize preliminary spike receiver
 
-    if sum(np.isnan(signal)) > 0:
+    if np.any(np.isnan(signal)):
         return None  # if there are any nans in the signal skip the channel (worth investigating)
 
-    # re-adjust the mean of the signal to be zero
+    # Re-adjust the mean of the signal to be zero
     signal = signal - np.mean(signal)
 
     # receiver initialization
@@ -226,7 +222,7 @@ def process_channel(
     signals = [hpsignal, -hpsignal]
 
     for ksignal in signals:
-        # apply custom peak finder /IES_helper_functions.py
+        # apply custom peak finder
         spp, spv = find_peaks(ksignal)  # calculate peaks and troughs
         spp, spv = spp.squeeze(), spv.squeeze()  # reformat
 
@@ -342,14 +338,15 @@ def spike_detector(data, fs, **kwargs):
     sur_time = kwargs.get("sur_time", 0.5)
     close_to_edge = kwargs.get("close_to_edge", 0.05)
     too_high_abs = kwargs.get("too_high_abs", 1e3)
-    # spike duration must be less than this in ms. It gets converted to points here
+    # spike duration must be less than this in ms. It gets converted to samples here
     spkdur = kwargs.get("spkdur", np.array([15, 260]))
     lpf1 = kwargs.get("lpf1", 30)  # low pass filter for spikey component
     hpf = kwargs.get("hpf", 7)  # high pass filter for spikey component
-    labels = kwargs.get("labels", [])
     ###################################
 
     # Assertions and assignments
+    if not isinstance(data, np.ndarray):
+        data = data.to_numpy()
     if not isinstance(spkdur, np.ndarray):
         spkdur = np.array(spkdur)
 
@@ -357,8 +354,7 @@ def spike_detector(data, fs, **kwargs):
     # all_spikes = np.ndarray((1,2),dtype=float)
     all_spikes = []
     nchs = data.shape[1]
-    spkdur = spkdur * fs / 1000  # change to samples
-    labels = np.array(labels)
+    spkdur = (spkdur / 1000) * fs  # From milliseconds to samples
 
     with concurrent.futures.ProcessPoolExecutor() as executor:
         futures_to_channel = {
