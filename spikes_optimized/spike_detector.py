@@ -416,30 +416,30 @@ def spike_detector(data, fs, **kwargs):
     #     idx = np.argsort(all_spikes[:,0],axis=0)
     #     gdf = all_spikes[idx,:]
 
-    ## Remove those too close to beginning and end
-    if gdf.shape[0]:
-        close_idx = close_to_edge * fs
-        gdf = gdf[gdf[:, 0] > close_idx, :]
-        gdf = gdf[gdf[:, 0] < data.shape[0] - close_idx, :]
+    # ## Remove those too close to beginning and end
+    # if gdf.shape[0]:
+    #     close_idx = close_to_edge * fs
+    #     gdf = gdf[gdf[:, 0] > close_idx, :]
+    #     gdf = gdf[gdf[:, 0] < data.shape[0] - close_idx, :]
 
-    # removing duplicate spikes with closeness threshold
-    if gdf.any():
-        # distance between spike times
-        gdf_diff = np.diff(gdf, axis=0)
-        # time difference is below threshold - thresh not necessary becasue of spike realignment
-        mask1 = np.abs(gdf_diff[:, 0]) < 100e-3 * fs
-        # ensuring they're on different channels
-        mask2 = gdf_diff[:, 1] == 0
-        too_close = np.argwhere(mask1 & mask2) + 1
+    # # removing duplicate spikes with closeness threshold
+    # if gdf.any():
+    #     # distance between spike times
+    #     gdf_diff = np.diff(gdf, axis=0)
+    #     # time difference is below threshold - thresh not necessary becasue of spike realignment
+    #     mask1 = np.abs(gdf_diff[:, 0]) < 100e-3 * fs
+    #     # ensuring they're on different channels
+    #     mask2 = gdf_diff[:, 1] == 0
+    #     too_close = np.argwhere(mask1 & mask2) + 1
 
-        # coerce shape of mask to <=2 dimensions
-        too_close = too_close.squeeze()
-        close_mask = np.ones((gdf.shape[0],), dtype=bool)
-        close_mask[too_close] = False
-        gdf = gdf[close_mask, :]
+    #     # coerce shape of mask to <=2 dimensions
+    #     too_close = too_close.squeeze()
+    #     close_mask = np.ones((gdf.shape[0],), dtype=bool)
+    #     close_mask[too_close] = False
+    #     gdf = gdf[close_mask, :]
 
-    # Check that spike occurs in multiple channels
-    if gdf.any() & (nchs > 1):
-        gdf = multi_channel_requirement(gdf, nchs, fs)
+    # # Check that spike occurs in multiple channels
+    # if gdf.any() & (nchs > 1):
+    #     gdf = multi_channel_requirement(gdf, nchs, fs)
 
     return gdf
