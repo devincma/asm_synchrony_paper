@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[3]:
 
 
+# !rm -rf __pycache__
 import numpy as np
 import os, pickle
 import pandas as pd
@@ -11,11 +12,10 @@ from scipy.signal import hilbert
 from iEEG_helper_functions import *
 
 IEEG_DIRECTORY = "../../Data/ieeg/all/2_min"
-SYNCHRONY_1_70_DIRECTORY = "../../Data/synchrony/1_70"
-SYNCHRONY_BROADBAND_DIRECTORY = "../../Data/synchrony/broadband"
+SYNCHRONY_60_100_DIRECTORY = "../../Data/synchrony/hourly/60_100"
 
 
-# In[ ]:
+# In[2]:
 
 
 def calculate_synchrony(time_series):
@@ -51,7 +51,7 @@ def calculate_synchrony(time_series):
 #     return entropy
 
 
-# In[ ]:
+# In[3]:
 
 
 nina_patient_hup_ids = pd.read_excel("../../Data/HUP_implant_dates.xlsx")
@@ -59,7 +59,7 @@ nina_patient_hup_ids = nina_patient_hup_ids["hup_id"].to_numpy()
 nina_patient_hup_ids
 
 
-# In[ ]:
+# In[4]:
 
 
 # Create a mapping between patient ids and the index of the patient in the patients_df dataframe
@@ -69,7 +69,7 @@ for i, patient_id in enumerate(nina_patient_hup_ids):
 # patient_hup_id_to_index
 
 
-# In[ ]:
+# In[5]:
 
 
 ieeg_offset_row1_df = pd.read_excel("../../Data/ieeg_offset/row_1.xlsx", header=None)
@@ -77,7 +77,7 @@ ieeg_offset_row2_df = pd.read_excel("../../Data/ieeg_offset/row_2.xlsx", header=
 ieeg_offset_row3_df = pd.read_excel("../../Data/ieeg_offset/row_3.xlsx", header=None)
 
 
-# In[ ]:
+# In[6]:
 
 
 # Load master_elecs.csv from ./data/
@@ -95,7 +95,7 @@ master_elecs_df = master_elecs_df.drop(
 master_elecs_df
 
 
-# In[ ]:
+# In[7]:
 
 
 # Load rid_hup_table.csv from ./data/
@@ -105,7 +105,7 @@ rid_hup_table_df = rid_hup_table_df.drop(columns=["t3_subject_id", "ieegportalsu
 rid_hup_table_df
 
 
-# In[ ]:
+# In[8]:
 
 
 # Create an empty dictionary to store all the data
@@ -149,113 +149,109 @@ datasets_df["max_hour_count"] = datasets_df["max_hour"] + 1
 datasets_df
 
 
-# In[ ]:
+# In[9]:
 
 
-ids = datasets_df["hup_id"].unique()[11:]
-# odd ids
+ids = datasets_df["hup_id"].unique()
 even_ids = ids[ids % 2 == 0]
 
 
 # In[ ]:
 
 
-for patient_hup_id in even_ids:
-    # Find the value of record_id in rid_hup_table_df where hupsubjno == patient_hup_id
-    patient_rid = rid_hup_table_df[rid_hup_table_df["hupsubjno"] == patient_hup_id][
-        "record_id"
-    ].values[0]
-    # Get the row in datasets_df corresponding to the patient_hup_id
-    rows_df = datasets_df[datasets_df["hup_id"] == patient_hup_id]
-    # Sort rows_df by dataset_name
-    rows_df = rows_df.sort_values(by=["dataset_name"])
-    rows_df = rows_df.reset_index(drop=True)
-    patient_electrodes_df = master_elecs_df.loc[master_elecs_df["rid"] == patient_rid]
-    print(f"HUP {patient_hup_id}, rid {patient_rid}")
+# for patient_hup_id in even_ids:
+#     # Find the value of record_id in rid_hup_table_df where hupsubjno == patient_hup_id
+#     patient_rid = rid_hup_table_df[rid_hup_table_df["hupsubjno"] == patient_hup_id][
+#         "record_id"
+#     ].values[0]
+#     # Get the row in datasets_df corresponding to the patient_hup_id
+#     rows_df = datasets_df[datasets_df["hup_id"] == patient_hup_id]
+#     # Sort rows_df by dataset_name
+#     rows_df = rows_df.sort_values(by=["dataset_name"])
+#     rows_df = rows_df.reset_index(drop=True)
+#     patient_electrodes_df = master_elecs_df.loc[master_elecs_df["rid"] == patient_rid]
+#     print(f"HUP {patient_hup_id}, rid {patient_rid}")
 
-    # Add up all the max_hours for rows_df
-    total_max_hour_count = rows_df["max_hour_count"].sum()
+#     # Add up all the max_hours for rows_df
+#     total_max_hour_count = rows_df["max_hour_count"].sum()
 
-    ##########################################
-    # Create empty vectors to save the data
-    ##########################################
-    synchrony_1_70_vector_to_save = np.zeros(total_max_hour_count)
-    synchrony_broadband_vector_to_save = np.zeros(total_max_hour_count)
-    current_hour = 0
+#     ##########################################
+#     # Create empty vectors to save the data
+#     ##########################################
+#     synchrony_60_100_vector_to_save = np.zeros(total_max_hour_count)
+#     current_hour = 0
 
-    for dataset_idx, dataset_row in rows_df.iterrows():
-        # Get the dataset_name, max_hour, and sample_rate
-        dataset_name = dataset_row["dataset_name"]
-        max_hour_count = dataset_row["max_hour_count"]
-        fs = dataset_row["sample_rate"]
-        print(dataset_name)
+#     for dataset_idx, dataset_row in rows_df.iterrows():
+#         # Get the dataset_name, max_hour, and sample_rate
+#         dataset_name = dataset_row["dataset_name"]
+#         max_hour_count = dataset_row["max_hour_count"]
+#         fs = dataset_row["sample_rate"]
+#         print(dataset_name)
 
-        for hour in range(max_hour_count):
-            # Get the filename
-            filename = f"{dataset_name}_hr_{hour}_fs_{fs}.pkl"
-            # Get the full path to the file
-            full_path = os.path.join(IEEG_DIRECTORY, filename)
+#         for hour in range(max_hour_count):
+#             # Get the filename
+#             filename = f"{dataset_name}_hr_{hour}_fs_{fs}.pkl"
+#             # Get the full path to the file
+#             full_path = os.path.join(IEEG_DIRECTORY, filename)
 
-            # Load the data
-            try:
-                with open(full_path, "rb") as f:
-                    ieeg_data = pickle.load(f)
-            except FileNotFoundError:
-                print(f"Skipping {hour} for {dataset_name}")
-                synchrony_1_70_vector_to_save[current_hour] = np.nan
-                synchrony_broadband_vector_to_save[current_hour] = np.nan
-                current_hour += 1
-                continue
+#             # Load the data
+#             try:
+#                 with open(full_path, "rb") as f:
+#                     ieeg_data = pickle.load(f)
+#             except FileNotFoundError:
+#                 print(f"Skipping {hour} for {dataset_name}")
+#                 synchrony_60_100_vector_to_save[current_hour] = np.nan
+#                 current_hour += 1
+#                 continue
 
-            print(
-                f"Processing hour {hour} in {dataset_name}, that's hour {current_hour} out of {total_max_hour_count} for HUP {patient_hup_id}"
-            )
+#             print(
+#                 f"Processing hour {hour} in {dataset_name}, that's hour {current_hour} out of {total_max_hour_count} for HUP {patient_hup_id}"
+#             )
 
-            try:
-                all_channel_labels = ieeg_data.columns.values.astype(str)
-                label_idxs = electrode_selection(all_channel_labels)
-                labels = all_channel_labels[label_idxs]
-                ieeg_data = ieeg_data[labels]
-                good_channels_res = detect_bad_channels_optimized(
-                    ieeg_data.to_numpy(), fs
-                )
-                good_channel_indicies = good_channels_res[0]
-                good_labels = labels[good_channel_indicies]
-                ieeg_data = ieeg_data[good_labels]
+#             try:
+#                 all_channel_labels = ieeg_data.columns.values.astype(str)
+#                 label_idxs = electrode_selection(all_channel_labels)
+#                 labels = all_channel_labels[label_idxs]
+#                 ieeg_data = ieeg_data[labels]
+#                 good_channels_res = detect_bad_channels_optimized(
+#                     ieeg_data.to_numpy(), fs
+#                 )
+#                 good_channel_indicies = good_channels_res[0]
+#                 good_labels = labels[good_channel_indicies]
+#                 ieeg_data = ieeg_data[good_labels]
 
-                ieeg_data = common_average_montage(ieeg_data)
+#                 ieeg_data = common_average_montage(ieeg_data)
 
-                # Broadband
-                ieeg_data = pd.DataFrame(notch_filter(ieeg_data.values, 59, 61, fs))
-                _, R = calculate_synchrony((ieeg_data.T).to_numpy())
-                synchrony_broadband_vector_to_save[current_hour] = R
+#                 # Broadband
+#                 ieeg_data = pd.DataFrame(notch_filter(ieeg_data.values, 59, 61, fs))
 
-                # 1-70 Hz
-                ieeg_data = pd.DataFrame(bandpass_filter(ieeg_data.values, 1, 70, fs))
-                _, R = calculate_synchrony((ieeg_data.T).to_numpy())
-                synchrony_1_70_vector_to_save[current_hour] = R
+#                 # 60-100 Hz
+#                 ieeg_data = pd.DataFrame(bandpass_filter(ieeg_data.values, 60, 100, fs))
+#                 _, R = calculate_synchrony((ieeg_data.T).to_numpy())
+#                 synchrony_60_100_vector_to_save[current_hour] = R
 
-                # Increment current_hour
-                current_hour += 1
+#                 # Increment current_hour
+#                 current_hour += 1
 
-            except:
-                print(f"Skipping {hour} for {dataset_name} due to unknown error")
-                synchrony_1_70_vector_to_save[current_hour] = np.nan
-                synchrony_broadband_vector_to_save[current_hour] = np.nan
-                current_hour += 1
-                continue
+#             except:
+#                 print(f"Skipping {hour} for {dataset_name} due to unknown error")
+#                 synchrony_60_100_vector_to_save[current_hour] = np.nan
+#                 current_hour += 1
+#                 continue
 
-    ##########################################
-    # Save files
-    ##########################################
-    np.save(
-        f"{SYNCHRONY_1_70_DIRECTORY}/HUP_{patient_hup_id}.npy",
-        synchrony_1_70_vector_to_save,
-    )
-    np.save(
-        f"{SYNCHRONY_BROADBAND_DIRECTORY}/HUP_{patient_hup_id}.npy",
-        synchrony_broadband_vector_to_save,
-    )
+#     ##########################################
+#     # Save files
+#     ##########################################
+#     np.save(
+#         f"{SYNCHRONY_60_100_DIRECTORY}/HUP_{patient_hup_id}.npy",
+#         synchrony_60_100_vector_to_save,
+#     )
+
+
+# In[9]:
+
+
+get_ipython().system('jupyter nbconvert --to python calculate_synchrony_even.ipynb')
 
 
 # In[ ]:

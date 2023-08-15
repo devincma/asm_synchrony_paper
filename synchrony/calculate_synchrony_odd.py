@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[3]:
 
 
+# !rm -rf __pycache__
 import numpy as np
 import os, pickle
 import pandas as pd
@@ -11,11 +12,10 @@ from scipy.signal import hilbert
 from iEEG_helper_functions import *
 
 IEEG_DIRECTORY = "../../Data/ieeg/all/2_min"
-SYNCHRONY_1_70_DIRECTORY = "../../Data/synchrony/1_70"
-SYNCHRONY_BROADBAND_DIRECTORY = "../../Data/synchrony/broadband"
+SYNCHRONY_60_100_DIRECTORY = "../../Data/synchrony/hourly/60_100"
 
 
-# In[ ]:
+# In[2]:
 
 
 def calculate_synchrony(time_series):
@@ -51,7 +51,7 @@ def calculate_synchrony(time_series):
 #     return entropy
 
 
-# In[ ]:
+# In[3]:
 
 
 nina_patient_hup_ids = pd.read_excel("../../Data/HUP_implant_dates.xlsx")
@@ -59,7 +59,7 @@ nina_patient_hup_ids = nina_patient_hup_ids["hup_id"].to_numpy()
 nina_patient_hup_ids
 
 
-# In[ ]:
+# In[4]:
 
 
 # Create a mapping between patient ids and the index of the patient in the patients_df dataframe
@@ -69,7 +69,7 @@ for i, patient_id in enumerate(nina_patient_hup_ids):
 # patient_hup_id_to_index
 
 
-# In[ ]:
+# In[5]:
 
 
 ieeg_offset_row1_df = pd.read_excel("../../Data/ieeg_offset/row_1.xlsx", header=None)
@@ -77,7 +77,7 @@ ieeg_offset_row2_df = pd.read_excel("../../Data/ieeg_offset/row_2.xlsx", header=
 ieeg_offset_row3_df = pd.read_excel("../../Data/ieeg_offset/row_3.xlsx", header=None)
 
 
-# In[ ]:
+# In[6]:
 
 
 # Load master_elecs.csv from ./data/
@@ -95,7 +95,7 @@ master_elecs_df = master_elecs_df.drop(
 master_elecs_df
 
 
-# In[ ]:
+# In[7]:
 
 
 # Load rid_hup_table.csv from ./data/
@@ -105,7 +105,7 @@ rid_hup_table_df = rid_hup_table_df.drop(columns=["t3_subject_id", "ieegportalsu
 rid_hup_table_df
 
 
-# In[ ]:
+# In[8]:
 
 
 # Create an empty dictionary to store all the data
@@ -149,11 +149,10 @@ datasets_df["max_hour_count"] = datasets_df["max_hour"] + 1
 datasets_df
 
 
-# In[ ]:
+# In[9]:
 
 
-ids = datasets_df["hup_id"].unique()[11:]
-# odd ids
+ids = datasets_df["hup_id"].unique()
 odd_ids = ids[ids % 2 != 0]
 
 
@@ -179,8 +178,7 @@ for patient_hup_id in odd_ids:
     ##########################################
     # Create empty vectors to save the data
     ##########################################
-    synchrony_1_70_vector_to_save = np.zeros(total_max_hour_count)
-    synchrony_broadband_vector_to_save = np.zeros(total_max_hour_count)
+    synchrony_60_100_vector_to_save = np.zeros(total_max_hour_count)
     current_hour = 0
 
     for dataset_idx, dataset_row in rows_df.iterrows():
@@ -202,8 +200,7 @@ for patient_hup_id in odd_ids:
                     ieeg_data = pickle.load(f)
             except FileNotFoundError:
                 print(f"Skipping {hour} for {dataset_name}")
-                synchrony_1_70_vector_to_save[current_hour] = np.nan
-                synchrony_broadband_vector_to_save[current_hour] = np.nan
+                synchrony_60_100_vector_to_save[current_hour] = np.nan
                 current_hour += 1
                 continue
 
@@ -227,21 +224,18 @@ for patient_hup_id in odd_ids:
 
                 # Broadband
                 ieeg_data = pd.DataFrame(notch_filter(ieeg_data.values, 59, 61, fs))
-                _, R = calculate_synchrony((ieeg_data.T).to_numpy())
-                synchrony_broadband_vector_to_save[current_hour] = R
 
-                # 1-70 Hz
-                ieeg_data = pd.DataFrame(bandpass_filter(ieeg_data.values, 1, 70, fs))
+                # 60-100 Hz
+                ieeg_data = pd.DataFrame(bandpass_filter(ieeg_data.values, 60, 100, fs))
                 _, R = calculate_synchrony((ieeg_data.T).to_numpy())
-                synchrony_1_70_vector_to_save[current_hour] = R
+                synchrony_60_100_vector_to_save[current_hour] = R
 
                 # Increment current_hour
                 current_hour += 1
 
             except:
                 print(f"Skipping {hour} for {dataset_name} due to unknown error")
-                synchrony_1_70_vector_to_save[current_hour] = np.nan
-                synchrony_broadband_vector_to_save[current_hour] = np.nan
+                synchrony_60_100_vector_to_save[current_hour] = np.nan
                 current_hour += 1
                 continue
 
@@ -249,10 +243,13 @@ for patient_hup_id in odd_ids:
     # Save files
     ##########################################
     np.save(
-        f"{SYNCHRONY_1_70_DIRECTORY}/HUP_{patient_hup_id}.npy",
-        synchrony_1_70_vector_to_save,
+        f"{SYNCHRONY_60_100_DIRECTORY}/HUP_{patient_hup_id}.npy",
+        synchrony_60_100_vector_to_save,
     )
-    np.save(
-        f"{SYNCHRONY_BROADBAND_DIRECTORY}/HUP_{patient_hup_id}.npy",
-        synchrony_broadband_vector_to_save,
-    )
+
+
+# In[ ]:
+
+
+
+
