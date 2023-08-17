@@ -1,5 +1,5 @@
-import concurrent.futures
 import numpy as np
+import concurrent.futures
 from scipy import signal as sig
 
 
@@ -330,7 +330,6 @@ def spike_detector(data, fs, **kwargs):
     Returns
     gdf:            np.NDArray - spike locations (m spikes x (peak index, channel))
     """
-    print("Using optimized spike detector...")
 
     ### Assigning KWARGS using a more efficient method ###############
     tmul = kwargs.get("tmul", 19)  # 25
@@ -438,6 +437,17 @@ def spike_detector(data, fs, **kwargs):
         close_mask[too_close] = False
         gdf = gdf[close_mask, :]
 
+    print("Returning early to skip multi_channel_requirement")
+    return gdf
+
+    # Check that spike occurs in multiple channels
+    if gdf.any() & (nchs > 1):
+        gdf = multi_channel_requirement(gdf, nchs, fs)
+
+    return gdf
+
+
+def post_processing(gdf, nchs, fs):
     # Check that spike occurs in multiple channels
     if gdf.any() & (nchs > 1):
         gdf = multi_channel_requirement(gdf, nchs, fs)
