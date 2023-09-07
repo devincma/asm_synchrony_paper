@@ -173,6 +173,15 @@ def detect_bad_channels_optimized(values, fs):
             zero_ch.append(ich)
             continue
 
+        # Check for constant values
+        if len(np.unique(eeg)) == 1:
+            bad.add(ich)
+            # You might want to create a new list called constant_ch or similar
+            zero_ch.append(
+                ich
+            )  # Or use a different list for constant channels, like constant_ch
+            continue
+
         # Check above absolute threshold
         if np.sum(np.abs(eeg - median_values[ich]) > abs_thresh) > 10:
             bad.add(ich)
@@ -197,10 +206,16 @@ def detect_bad_channels_optimized(values, fs):
         freqs = freqs[:-1]
         P = P[: int(np.ceil(len(P) / 2))]
         freqs = freqs[: int(np.ceil(len(freqs) / 2))]
-        P_60Hz = np.sum(P[(freqs > 58) & (freqs < 62)]) / np.sum(P)
-        if P_60Hz > percent_60_hz:
+        total_power = np.sum(P)
+        if total_power == 0:
             bad.add(ich)
-            noisy_ch.append(ich)
+            high_var_ch.append(ich)
+            continue
+        else:
+            P_60Hz = np.sum(P[(freqs > 58) & (freqs < 62)]) / total_power
+            if P_60Hz > percent_60_hz:
+                bad.add(ich)
+                noisy_ch.append(ich)
 
     # Combine all bad channels
     bad = bad.union(higher_std)
