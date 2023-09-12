@@ -193,8 +193,8 @@ for index, row in batch.iterrows():
 
         try:
             ieeg_data, fs = get_iEEG_data(
-                "dma",
-                "dma_ieeglogin.bin",
+                "aguilac",
+                "agu_ieeglogin.bin",
                 dataset_name,
                 start_time_usec,
                 stop_time_usec,
@@ -243,14 +243,3 @@ for index, row in batch.iterrows():
         synchrony_broadband_vector_to_save,
     )
     print(f"Saved synchrony output for HUP {hup_id}")
-
-
-# In[1]:
-
-
-get_ipython().system(
-    "jupyter nbconvert --to python download_calculate_all_iter_2.ipynb"
-)
-
-
-# In[ ]:

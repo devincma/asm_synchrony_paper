@@ -243,14 +243,3 @@ for index, row in batch.iterrows():
         synchrony_broadband_vector_to_save,
     )
     print(f"Saved synchrony output for HUP {hup_id}")
-
-
-# In[1]:
-
-
-get_ipython().system(
-    "jupyter nbconvert --to python download_calculate_all_iter_2.ipynb"
-)
-
-
-# In[ ]:

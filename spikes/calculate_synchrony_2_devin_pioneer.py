@@ -139,21 +139,21 @@ batch
 # In[ ]:
 
 
-def create_pwd_file(username, password, fname=None):
-    if fname is None:
-        fname = "{}_ieeglogin.bin".format(username[:3])
-    with open(fname, "wb") as f:
-        f.write(password.encode())
-    print("-- -- IEEG password file saved -- --")
+# def create_pwd_file(username, password, fname=None):
+#     if fname is None:
+#         fname = "{}_ieeglogin.bin".format(username[:3])
+#     with open(fname, "wb") as f:
+#         f.write(password.encode())
+#     print("-- -- IEEG password file saved -- --")
 
 
-create_pwd_file("dma", "mycqEv-pevfo4-roqfan")
-print("Using Devin session")
-with open("dma_ieeglogin.bin", "r") as f:
-    session = Session("dma", f.read())
-# print("Using Carlos session")
-# with open("agu_ieeglogin.bin", "r") as f:
-#     session = Session("aguilac", f.read())
+# create_pwd_file("dma", "mycqEv-pevfo4-roqfan")
+# print("Using Devin session")
+# with open("dma_ieeglogin.bin", "r") as f:
+#     session = Session("dma", f.read())
+print("Using Carlos session")
+with open("agu_ieeglogin.bin", "r") as f:
+    session = Session("aguilac", f.read())
 
 
 # In[ ]:
@@ -193,8 +193,8 @@ for index, row in batch.iterrows():
 
         try:
             ieeg_data, fs = get_iEEG_data(
-                "dma",
-                "dma_ieeglogin.bin",
+                "aguilac",
+                "agu_ieeglogin.bin",
                 dataset_name,
                 start_time_usec,
                 stop_time_usec,
@@ -243,14 +243,3 @@ for index, row in batch.iterrows():
         synchrony_broadband_vector_to_save,
     )
     print(f"Saved synchrony output for HUP {hup_id}")
-
-
-# In[1]:
-
-
-get_ipython().system(
-    "jupyter nbconvert --to python download_calculate_all_iter_2.ipynb"
-)
-
-
-# In[ ]:
