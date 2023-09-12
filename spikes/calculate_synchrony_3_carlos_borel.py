@@ -147,13 +147,13 @@ def create_pwd_file(username, password, fname=None):
     print("-- -- IEEG password file saved -- --")
 
 
-create_pwd_file("dma", "mycqEv-pevfo4-roqfan")
-print("Using Devin session")
-with open("dma_ieeglogin.bin", "r") as f:
-    session = Session("dma", f.read())
-# print("Using Carlos session")
-# with open("agu_ieeglogin.bin", "r") as f:
-#     session = Session("aguilac", f.read())
+# create_pwd_file("dma", "mycqEv-pevfo4-roqfan")
+# print("Using Devin session")
+# with open("dma_ieeglogin.bin", "r") as f:
+#     session = Session("dma", f.read())
+print("Using Carlos session")
+with open("agu_ieeglogin.bin", "r") as f:
+    session = Session("aguilac", f.read())
 
 
 # In[ ]:
@@ -193,8 +193,8 @@ for index, row in batch.iterrows():
 
         try:
             ieeg_data, fs = get_iEEG_data(
-                "dma",
-                "dma_ieeglogin.bin",
+                "aguilac",
+                "agu_ieeglogin.bin",
                 dataset_name,
                 start_time_usec,
                 stop_time_usec,

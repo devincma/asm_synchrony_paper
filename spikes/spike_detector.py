@@ -140,59 +140,6 @@ def multi_channel_requirement(gdf, nchs, fs):
         return np.array([])
 
 
-def multi_channel_requirement_2(gdf, nchs, fs):
-    min_chs = 2
-    if nchs < 16:
-        max_chs = np.inf
-    else:
-        max_chs = np.ceil(nchs / 2)
-    min_time = 100 * 1e-3 * fs
-
-    # Check if there is even more than 1 spiking channel. Will throw error
-    try:
-        if len(np.unique(gdf[:, 1])) < min_chs:
-            return np.array([])
-    except IndexError:
-        return np.array([])
-
-    final_spikes = []
-    s = 0
-    curr_seq = [s]
-    last_time = gdf[s, 0]
-
-    while s < (gdf.shape[0] - 1):  # check to see if we are at last spike
-        # move to next spike time
-        new_time = gdf[s + 1, 0]
-
-        if (new_time - last_time) < min_time:
-            curr_seq.append(s + 1)
-
-            if s == (gdf.shape[0] - 2):
-                l = len(np.unique(gdf[curr_seq, 1]))
-                if l >= min_chs and l <= max_chs:
-                    relative_time_diff = gdf[curr_seq, 0] - gdf[curr_seq[0], 0]
-                    final_spikes.append(
-                        np.hstack((gdf[curr_seq, :], relative_time_diff.reshape(-1, 1)))
-                    )
-        else:
-            l = len(np.unique(gdf[curr_seq, 1]))
-            if (l >= min_chs) & (l <= max_chs):
-                relative_time_diff = gdf[curr_seq, 0] - gdf[curr_seq[0], 0]
-                final_spikes.append(
-                    np.hstack((gdf[curr_seq, :], relative_time_diff.reshape(-1, 1)))
-                )
-
-            curr_seq = [s + 1]
-
-        last_time = gdf[s + 1, 0]
-        s += 1
-
-    if len(final_spikes) != 0:
-        return np.vstack(final_spikes)
-    else:
-        return np.array([])
-
-
 def process_channel(
     signal, fs, tmul, absthresh, sur_time, too_high_abs, spkdur, lpf1, hpf
 ):

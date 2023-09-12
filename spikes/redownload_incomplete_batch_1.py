@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import os
@@ -13,14 +13,14 @@ from get_iEEG_data import *
 from iEEG_helper_functions import *
 
 
-# In[ ]:
+# In[2]:
 
 
 SPIKES_OUTPUT_DIR = "../../Data/spikes/devin_spikes/"
 SYNCHRONY_broadband_DIRECTORY = "../../Data/synchrony/all/broadband"
 
 
-# In[ ]:
+# In[3]:
 
 
 # Load HUP_implant_dates.xlsx
@@ -32,16 +32,31 @@ nina_patients_df
 
 # ## Already completed
 
-# In[ ]:
+# In[4]:
 
 
-incomplete_hup_ids = [146, 154, 157, 158, 161, 164, 165, 171, 182, 188]
+incomplete_hup_ids = [
+    143,
+    146,
+    155,
+    157,
+    158,
+    161,
+    163,
+    164,
+    165,
+    171,
+    182,
+    188,
+    206,
+    210,
+]
 incomplete_hup_ids.sort()
 print(incomplete_hup_ids)
 len(incomplete_hup_ids)
 
 
-# In[ ]:
+# In[5]:
 
 
 # Only keep the rows in nina_patients_df that have hup_ids not in completed_hup_ids
@@ -51,7 +66,7 @@ nina_patients_df = nina_patients_df.reset_index(drop=True)
 nina_patients_df
 
 
-# In[ ]:
+# In[6]:
 
 
 # Add a boolean column in nina_patients_df called is_single_dataset and make it True if IEEG_Portal_Number ends with "phaseII"
@@ -61,7 +76,7 @@ nina_patients_df["is_single_dataset"] = nina_patients_df[
 nina_patients_df
 
 
-# In[ ]:
+# In[7]:
 
 
 # Drop the rows in nina_patients_df where is_single_dataset is False
@@ -77,13 +92,13 @@ nina_patients_df = nina_patients_df.reset_index(drop=True)
 nina_patients_df
 
 
-# In[ ]:
+# In[8]:
 
 
 nina_patients_df[nina_patients_df["hup_id"] % 2 == 0].reset_index(drop=True)
 
 
-# In[ ]:
+# In[9]:
 
 
 nina_patients_df[nina_patients_df["hup_id"] % 2 == 1].reset_index(drop=True)
@@ -91,7 +106,7 @@ nina_patients_df[nina_patients_df["hup_id"] % 2 == 1].reset_index(drop=True)
 
 # ## Select a batch
 
-# In[ ]:
+# In[10]:
 
 
 batch = nina_patients_df[nina_patients_df["hup_id"] % 2 == 1].reset_index(drop=True)
@@ -194,3 +209,4 @@ for index, row in batch.iterrows():
         synchrony_broadband_vector_to_save,
     )
     print(f"Saved synchrony output for HUP {hup_id}")
+
