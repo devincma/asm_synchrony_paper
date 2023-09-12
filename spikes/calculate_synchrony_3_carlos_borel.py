@@ -139,21 +139,21 @@ batch
 # In[ ]:
 
 
-# def create_pwd_file(username, password, fname=None):
-#     if fname is None:
-#         fname = "{}_ieeglogin.bin".format(username[:3])
-#     with open(fname, "wb") as f:
-#         f.write(password.encode())
-#     print("-- -- IEEG password file saved -- --")
+def create_pwd_file(username, password, fname=None):
+    if fname is None:
+        fname = "{}_ieeglogin.bin".format(username[:3])
+    with open(fname, "wb") as f:
+        f.write(password.encode())
+    print("-- -- IEEG password file saved -- --")
 
 
-# create_pwd_file("dma", "mycqEv-pevfo4-roqfan")
-# print("Using Devin session")
-# with open("dma_ieeglogin.bin", "r") as f:
-#     session = Session("dma", f.read())
-print("Using Carlos session")
-with open("agu_ieeglogin.bin", "r") as f:
-    session = Session("aguilac", f.read())
+create_pwd_file("dma", "mycqEv-pevfo4-roqfan")
+print("Using Devin session")
+with open("dma_ieeglogin.bin", "r") as f:
+    session = Session("dma", f.read())
+# print("Using Carlos session")
+# with open("agu_ieeglogin.bin", "r") as f:
+#     session = Session("aguilac", f.read())
 
 
 # In[ ]:

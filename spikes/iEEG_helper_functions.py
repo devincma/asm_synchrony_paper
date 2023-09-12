@@ -129,6 +129,56 @@ def electrode_selection(labels):
     return select
 
 
+# def electrode_selection(labels):
+#     """
+#     returns label selection array
+#     inputs:
+#     labels - string array of channel label name
+#     """
+#     print("using new electrode selection function")
+
+#     # Set of labels to be excluded
+#     exclude_labels = set(
+#         [
+#             "EKG",
+#             "ECG",
+#             "RATE",
+#             "RR",
+#             "C3",
+#             "C4",
+#             "CZ",
+#             "F8",
+#             "F7",
+#             "F4",
+#             "F3",
+#             "FP2",
+#             "FP1",
+#             "FZ",
+#             "LOC",
+#             "T4",
+#             "T5",
+#             "T3",
+#             "C6",
+#             "ROC",
+#             "P4",
+#             "P3",
+#             "T6",
+#         ]
+#     )
+
+#     # Convert all labels to uppercase once
+#     upper_labels = [label.upper() for label in labels]
+
+#     # List comprehension to check the conditions for each label
+#     select = [
+#         not any(check in label for check in exclude_labels)
+#         and not (label == "O2" and "O1" in upper_labels)
+#         for label in upper_labels
+#     ]
+
+#     return np.array(select, dtype=bool)
+
+
 def detect_bad_channels_optimized(values, fs):
     which_chs = np.arange(values.shape[1])
 
