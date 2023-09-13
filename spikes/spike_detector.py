@@ -258,7 +258,7 @@ def process_channel(
     return np.array(out)
 
 
-def spike_detector(data, fs, **kwargs):
+def spike_detector(data, fs, electrode_labels, **kwargs):
     """
     Parameters
     data:           np.NDArray - iEEG recordings (m samples x n channels)
@@ -330,6 +330,7 @@ def spike_detector(data, fs, **kwargs):
                             [
                                 np.expand_dims(channel_out, 1),
                                 np.tile([j], (len(channel_out), 1)),
+                                np.tile([electrode_labels[j]], (len(channel_out), 1)),
                             ],
                             dtype=object,
                         )
@@ -365,13 +366,13 @@ def spike_detector(data, fs, **kwargs):
     ## Remove those too close to beginning and end
     if gdf.shape[0]:
         close_idx = close_to_edge * fs
-        gdf = gdf[gdf[:, 0] > close_idx, :]
-        gdf = gdf[gdf[:, 0] < data.shape[0] - close_idx, :]
+        gdf = gdf[gdf[:, 0].astype(float) > close_idx, :]
+        gdf = gdf[gdf[:, 0].astype(float) < data.shape[0] - close_idx, :]
 
     # removing duplicate spikes with closeness threshold
-    if gdf.any():
+    if gdf[:, 0].astype(float).any():
         # distance between spike times
-        gdf_diff = np.diff(gdf, axis=0)
+        gdf_diff = np.diff(gdf[:, :2].astype(float), axis=0)
         # time difference is below threshold - thresh not necessary becasue of spike realignment
         mask1 = np.abs(gdf_diff[:, 0]) < 100e-3 * fs
         # ensuring they're on different channels
