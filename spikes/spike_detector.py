@@ -299,7 +299,11 @@ def spike_detector(data, fs, electrode_labels, **kwargs):
     # Receiver and constant variable initialization
     # all_spikes = np.ndarray((1,2),dtype=float)
     all_spikes = []
-    nchs = data.shape[1]
+    nchs = len(electrode_labels)
+
+    if nchs != data.shape[1]:
+        raise ValueError("Number of channels does not match iEEG data shape")
+
     spkdur = (spkdur / 1000) * fs  # From milliseconds to samples
 
     with concurrent.futures.ProcessPoolExecutor() as executor:
@@ -321,6 +325,7 @@ def spike_detector(data, fs, electrode_labels, **kwargs):
 
         for future in concurrent.futures.as_completed(futures_to_channel):
             j = futures_to_channel[future]
+            print(j)
             try:
                 channel_out = future.result()
                 # Concatenate the list of spikes to the global spike receiver
