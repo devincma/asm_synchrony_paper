@@ -403,7 +403,7 @@ def spike_detector(data, fs, **kwargs):
             try:
                 channel_out = future.result()
                 # Concatenate the list of spikes to the global spike receiver
-                if channel_out.any():
+                if channel_out is not None and channel_out.any():
                     temp = (
                         np.array(
                             [
