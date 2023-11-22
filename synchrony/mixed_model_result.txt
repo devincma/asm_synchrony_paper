@@ -1,0 +1,19 @@
+                Mixed Linear Model Regression Results
+======================================================================
+Model:            MixedLM Dependent Variable: med_sum_no_lorazepam_raw
+No. Observations: 96636   Method:             REML                    
+No. Groups:       34      Scale:              0.0310                  
+Min. group size:  31      Log-Likelihood:     30579.8569              
+Max. group size:  9111    Converged:          Yes                     
+Mean group size:  2842.2                                              
+----------------------------------------------------------------------
+                           Coef.  Std.Err.    z    P>|z| [0.025 0.975]
+----------------------------------------------------------------------
+Intercept                   0.385    0.044   8.761 0.000  0.299  0.471
+synchrony_broadband        -0.434    0.016 -27.425 0.000 -0.465 -0.403
+time_since_last_seizure    -0.000    0.000 -28.232 0.000 -0.000 -0.000
+emu_minute                  0.000    0.000  27.279 0.000  0.000  0.000
+ad_ratio                   -0.011    0.001 -22.417 0.000 -0.012 -0.010
+had_seizure                -0.026    0.009  -2.966 0.003 -0.043 -0.009
+Group Var                   0.065    0.088                            
+======================================================================
