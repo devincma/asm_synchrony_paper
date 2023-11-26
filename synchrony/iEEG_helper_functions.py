@@ -197,10 +197,16 @@ def detect_bad_channels_optimized(values, fs):
         freqs = freqs[:-1]
         P = P[: int(np.ceil(len(P) / 2))]
         freqs = freqs[: int(np.ceil(len(freqs) / 2))]
-        P_60Hz = np.sum(P[(freqs > 58) & (freqs < 62)]) / np.sum(P)
-        if P_60Hz > percent_60_hz:
+        total_power = np.sum(P)
+        if total_power == 0:
             bad.add(ich)
-            noisy_ch.append(ich)
+            high_var_ch.append(ich)
+            continue
+        else:
+            P_60Hz = np.sum(P[(freqs > 58) & (freqs < 62)]) / total_power
+            if P_60Hz > percent_60_hz:
+                bad.add(ich)
+                noisy_ch.append(ich)
 
     # Combine all bad channels
     bad = bad.union(higher_std)
