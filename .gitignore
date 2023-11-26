@@ -98,3 +98,5 @@ miniconda3/
 ._*.*
 
 .pytest_cache/
+
+__pycache__/
