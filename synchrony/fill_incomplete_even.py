@@ -63,6 +63,8 @@ for filename in os.listdir(SYNCHRONY_BROADBAND_DIRECTORY):
     if filename.endswith(".npy"):
         # Filenames are in the format of HUP_{patient_id}.npy
         hup_id = filename.split("_")[1].split(".")[0]
+        if int(hup_id) % 2 != 0:
+            continue
         # Load the data
         og_data = np.load(os.path.join(SYNCHRONY_BROADBAND_DIRECTORY, filename))
         # Find NaN segments
@@ -168,4 +170,3 @@ for filename in os.listdir(SYNCHRONY_BROADBAND_DIRECTORY):
                     synchrony_broadband_vector_to_save,
                 )
                 print(f"Saved HUP_{hup_id}_{segment_start}_{segment_end}.npy")
-
