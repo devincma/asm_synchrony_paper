@@ -149,6 +149,15 @@ for index, row in batch.iterrows():
     num_datasets = row["num_datasets"]
     print(f"HUP {hup_id} has {num_datasets} datasets")
     for ds_index in range(1, num_datasets + 1):
+        # Check if the file with name f"HUP_{hup_id}_ds_{ds_index}.npy" in SYNCHRONY_BROADBAND_MULTI_DS_DIRECTORY exists
+        if os.path.exists(
+            os.path.join(
+                SYNCHRONY_BROADBAND_MULTI_DS_DIRECTORY,
+                f"HUP_{hup_id}_ds_{ds_index}.npy",
+            )
+        ):
+            print(f"HUP_{hup_id}_ds_{ds_index}.npy exists, skip...")
+            continue
         dataset_name = f"HUP{hup_id}_phaseII_D0{ds_index}"
         print(f"Opening {dataset_name}")
         dataset = session.open_dataset(dataset_name)
