@@ -116,9 +116,9 @@ multiple_sample_rate_df
 # In[ ]:
 
 
-print("Using Carlos session")
-with open("agu_ieeglogin.bin", "r") as f:
-    session = Session("aguilac", f.read())
+print("Using Akash session")
+with open("pat_ieeglogin.bin", "r") as f:
+    session = Session("pattnaik", f.read())
 
 
 # In[ ]:
@@ -178,8 +178,8 @@ for index, row in batch.iterrows():
 
             try:
                 ieeg_data, fs = get_iEEG_data(
-                    "aguilac",
-                    "agu_ieeglogin.bin",
+                    "pattnaik",
+                    "pat_ieeglogin.bin",
                     dataset_name,
                     start_time_usec,
                     stop_time_usec,
@@ -243,4 +243,3 @@ for index, row in batch.iterrows():
 
 
 # !jupyter nbconvert --to python multidataset_download.ipynb
-
