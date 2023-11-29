@@ -72,7 +72,7 @@ for filename in os.listdir(SYNCHRONY_BROADBAND_DIRECTORY):
         # If the first element of the first tuple in nan_segments is 0, then delete the first tuple
         if nan_segments[0][0] == 0:
             nan_segments = nan_segments[1:]
-        if len(nan_segments) > 1:
+        if len(nan_segments) == 1:
             print(f"Filling incomplete data for HUP {hup_id}...")
             print(nan_segments)
             for segment in nan_segments:

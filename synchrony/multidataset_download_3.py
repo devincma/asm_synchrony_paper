@@ -189,8 +189,8 @@ for index, row in batch.iterrows():
 
             try:
                 ieeg_data, fs = get_iEEG_data(
-                    "aguilac",
-                    "agu_ieeglogin.bin",
+                    "pattnaik",
+                    "pat_ieeglogin.bin",
                     dataset_name,
                     start_time_usec,
                     stop_time_usec,
