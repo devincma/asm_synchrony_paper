@@ -127,9 +127,9 @@ single_sample_rate_df
 # In[ ]:
 
 
-print("Using Carlos session")
-with open("agu_ieeglogin.bin", "r") as f:
-    session = Session("aguilac", f.read())
+print("Using Akash session")
+with open("pat_ieeglogin.bin", "r") as f:
+    session = Session("pattnaik", f.read())
 
 
 # In[ ]:

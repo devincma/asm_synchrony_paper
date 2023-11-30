@@ -79,6 +79,16 @@ for filename in os.listdir(SYNCHRONY_BROADBAND_DIRECTORY):
                 print(f"Segment: {segment}")
                 segment_start = segment[0]
                 segment_end = segment[1]
+                if os.path.exists(
+                    os.path.join(
+                        SYNCHRONY_BROADBAND_FILL_DIRECTORY,
+                        f"HUP_{hup_id}_{segment_start}_{segment_end}.npy",
+                    )
+                ):
+                    print(
+                        f"HUP_{hup_id}_{segment_start}_{segment_end}.npy exists, skip..."
+                    )
+                    continue
                 dataset_name = f"HUP{hup_id}_phaseII"
                 dataset = session.open_dataset(dataset_name)
 
