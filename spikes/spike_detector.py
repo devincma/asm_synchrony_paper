@@ -404,7 +404,7 @@ def spike_detector(data, fs, electrode_labels, **kwargs):
 
         for future in concurrent.futures.as_completed(futures_to_channel):
             j = futures_to_channel[future]
-            print(j)
+            # print(j)
             try:
                 channel_out = future.result()
                 # Concatenate the list of spikes to the global spike receiver

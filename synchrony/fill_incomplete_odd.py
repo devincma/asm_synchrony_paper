@@ -49,9 +49,9 @@ def find_nan_segments(arr, min_length=240):
 # In[ ]:
 
 
-print("Using Akash session")
-with open("pat_ieeglogin.bin", "r") as f:
-    session = Session("pattnaik", f.read())
+print("Using Carlos session")
+with open("agu_ieeglogin.bin", "r") as f:
+    session = Session("aguilac", f.read())
 
 
 # In[ ]:
@@ -123,8 +123,8 @@ for filename in os.listdir(SYNCHRONY_BROADBAND_DIRECTORY):
 
                     try:
                         ieeg_data, fs = get_iEEG_data(
-                            "pattnaik",
-                            "pat_ieeglogin.bin",
+                            "aguilac",
+                            "agu_ieeglogin.bin",
                             dataset_name,
                             start_time_usec,
                             stop_time_usec,
