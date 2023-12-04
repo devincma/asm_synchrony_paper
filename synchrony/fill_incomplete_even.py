@@ -6,7 +6,6 @@
 
 import os
 import numpy as np
-import pandas as pd
 from ieeg.auth import Session
 
 from get_iEEG_data import *
@@ -16,7 +15,7 @@ from iEEG_helper_functions import *
 # In[ ]:
 
 
-SYNCHRONY_BROADBAND_DIRECTORY = "../../Data/synchrony/all/broadband"
+SYNCHRONY_BROADBAND_DIRECTORY = "../../Data/synchrony/all/broadband_new_after_fill"
 SYNCHRONY_BROADBAND_FILL_DIRECTORY = "../../Data/synchrony/all/broadband_fill"
 
 
