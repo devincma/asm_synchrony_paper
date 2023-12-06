@@ -15,7 +15,7 @@ from iEEG_helper_functions import *
 # In[ ]:
 
 
-SYNCHRONY_BROADBAND_DIRECTORY = "../../Data/synchrony/all/broadband_new_after_fill"
+SYNCHRONY_BROADBAND_DIRECTORY = "../../Data/synchrony/all/broadband_fill_intermediate"
 SYNCHRONY_BROADBAND_FILL_DIRECTORY = "../../Data/synchrony/all/broadband_fill"
 
 
