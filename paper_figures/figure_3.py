@@ -281,7 +281,49 @@ print(result.summary())
 # print("r^2 value:", result.rsquared)
 
 
-# In[10]:
+# In[ ]:
+
+
+import numpy as np
+
+# Get the fitted values based solely on fixed effects
+# (For a linear model, these are the predictions; ensure that random effects are excluded)
+fixed_effects_pred = result.fittedvalues
+var_fixed = np.var(fixed_effects_pred)
+
+# Extract the random effects variance (for a random intercept model, this is a single value)
+# Note: If your model has more complex random structures, you may need to sum across components
+var_random = result.cov_re.iloc[0, 0]
+
+# Get the residual variance (scale parameter)
+var_residual = result.scale
+
+# Compute marginal R²
+marginal_R2 = var_fixed / (var_fixed + var_random + var_residual)
+print("Marginal R²:", marginal_R2)
+
+
+# In[14]:
+
+
+import statsmodels.api as sm
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+
+# Create a dataframe with the predictors
+X = all_data[
+    ["synchrony_broadband", "time_since_last_seizure", "emu_minute", "ad_ratio"]
+]
+# Add an intercept term
+X = sm.add_constant(X)
+
+# Calculate VIF for each feature
+vif_data = pd.DataFrame()
+vif_data["feature"] = X.columns
+vif_data["VIF"] = [variance_inflation_factor(X.values, i) for i in range(X.shape[1])]
+print(vif_data)
+
+
+# In[15]:
 
 
 result.params.values
@@ -289,7 +331,7 @@ result.params.values
 
 # ### With standarization
 
-# In[11]:
+# In[16]:
 
 
 from sklearn.preprocessing import StandardScaler
@@ -349,9 +391,31 @@ result = model.fit()
 print(result.summary())
 
 
+# In[ ]:
+
+
+import numpy as np
+
+# Get the fitted values based solely on fixed effects
+# (For a linear model, these are the predictions; ensure that random effects are excluded)
+fixed_effects_pred = result.fittedvalues
+var_fixed = np.var(fixed_effects_pred)
+
+# Extract the random effects variance (for a random intercept model, this is a single value)
+# Note: If your model has more complex random structures, you may need to sum across components
+var_random = result.cov_re.iloc[0, 0]
+
+# Get the residual variance (scale parameter)
+var_residual = result.scale
+
+# Compute marginal R²
+marginal_R2 = var_fixed / (var_fixed + var_random + var_residual)
+print("Marginal R²:", marginal_R2)
+
+
 # ## Figure 3 (A) - Coefficients of Linear Mixed Model
 
-# In[12]:
+# In[20]:
 
 
 # Drop Group Var and Intercept from the results
@@ -399,11 +463,17 @@ plt.tight_layout()
 plt.show()
 
 
+# In[ ]:
+
+
+
+
+
 # ## Figure 3 (B) - Relative Importance from Dominance Analysis
 
 # #### Without standardization
 
-# In[13]:
+# In[21]:
 
 
 # Number of bootstraps
@@ -463,7 +533,7 @@ plt.show()
 
 # #### With standardization
 
-# In[14]:
+# In[ ]:
 
 
 from sklearn.preprocessing import StandardScaler
